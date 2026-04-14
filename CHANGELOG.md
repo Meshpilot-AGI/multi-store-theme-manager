@@ -13,6 +13,7 @@ Body text (if present) shown as indented sub-bullets.
 
 ## 2026-04-14
 
+- **23:22 UTC** — docs: add auto-generated CHANGELOG.md (`e906196`) — 1 file
 - **23:13 UTC** — chore: initial commit — Glitch Grow agency app (Custom distribution) (`283fd92`) — 45 files
     - Handles per-client Custom-distribution Shopify installs
     - Primary OAuth for Mokshya (client_id 75d0ca69...)
