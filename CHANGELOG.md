@@ -13,7 +13,9 @@ Body text (if present) shown as indented sub-bullets.
 
 ## 2026-04-15
 
-- **04:30 UTC** — auto-sync: 2026-04-15 04:30 UTC (`4aefcf1`) — 1 file
+- **05:30 UTC** — auto-sync: 2026-04-15 05:30 UTC (`d75d03a`) — 1 file
+        A	cli/_urban_adset_join.mjs
+- **04:30 UTC** — auto-sync: 2026-04-15 04:30 UTC (`b097d79`) — 2 files
         M	cli/shops.json
 - **04:15 UTC** — auto-sync: 2026-04-15 04:15 UTC (`eb0bb46`) — 2 files
         A	app/routes/auth.urban.$.jsx
