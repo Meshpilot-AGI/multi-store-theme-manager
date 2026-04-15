@@ -11,8 +11,17 @@ Body text (if present) shown as indented sub-bullets.
 
 ---
 
+## 2026-04-15
+
+- **00:10 UTC** — auto-sync: 2026-04-15 00:10 UTC (`231d722`) — 4 files
+        A	app/routes/webhooks.customers.data_request.jsx
+        A	app/routes/webhooks.customers.redact.jsx
+        A	app/routes/webhooks.shop.redact.jsx
+        M	shopify.app.toml
+
 ## 2026-04-14
 
+- **23:22 UTC** — docs: refresh CHANGELOG.md (`98ee725`) — 1 file
 - **23:22 UTC** — docs: add auto-generated CHANGELOG.md (`e906196`) — 1 file
 - **23:13 UTC** — chore: initial commit — Glitch Grow agency app (Custom distribution) (`283fd92`) — 45 files
     - Handles per-client Custom-distribution Shopify installs
