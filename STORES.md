@@ -22,8 +22,8 @@ re-attach / domain change. This repo auto-syncs to GitHub every 15 min
 | Client / brand | Store handle | myshopify domain | Custom App | Scope status | Meta Ads account |
 |---|---|---|---|---|---|
 | Urban Classics | urban-classics-hd | `f51039.myshopify.com` | `urban` | ✅ write_orders | `act_1765937727381511` URBAN-CAD-IST |
-| **Ayurpet** | ayurpet | `1ygbmd-pr.myshopify.com` | `ayurpet-ind` | ⚠ needs write_orders | `act_654879327196107` AyurPet – Ad Acc. 1 |
-| **Ayurpet** | 2684sq-mt | `2684sq-mt.myshopify.com` | `ayurpet` | ⚠ needs write_orders | `act_654879327196107` AyurPet – Ad Acc. 1 (same — both Ayurpet stores share one ad account) |
+| **Ayurpet (India)** | ayurpet | `1ygbmd-pr.myshopify.com` | `ayurpet-ind` | ✅ write_orders (updated 2026-04-15) | `act_654879327196107` AyurPet – Ad Acc. 1 |
+| **Ayurpet (Global)** | 2684sq-mt | `2684sq-mt.myshopify.com` | `ayurpet` | ✅ write_orders (updated 2026-04-15) | `act_654879327196107` AyurPet – Ad Acc. 1 (same — India + Global feed from one ad account) |
 | Classicoo (?) | — | `52j1ga-hz.myshopify.com` | `classicoo` | no write_orders | `act_1231977889107681` Clasicoo-IST-CAD (?) |
 | Classicoo (?) | — | `5u7mdi-ap.myshopify.com` | `classicoo` | no write_orders | TBD |
 | Internal | glitch-seo-test-1 | `glitch-seo-test-1.myshopify.com` | public app (Glitch SEO) | n/a | n/a |
@@ -35,7 +35,7 @@ Useful when reconciling ROAS across multiple storefronts that feed from one ad s
 | Meta Ads account | Name | Currency | Stores served |
 |---|---|---|---|
 | `act_1765937727381511` | URBAN-CAD-IST | CAD | `f51039.myshopify.com` (Urban Classics) |
-| `act_654879327196107` | AyurPet – Ad Acc. 1 | INR | `1ygbmd-pr.myshopify.com` + `2684sq-mt.myshopify.com` (both Ayurpet storefronts share this account) |
+| `act_654879327196107` | AyurPet – Ad Acc. 1 | INR | `1ygbmd-pr.myshopify.com` (**India storefront**) + `2684sq-mt.myshopify.com` (**Global storefront**). Single ad account routes traffic to both storefronts based on audience/geo targeting. ROAS must be reconciled across BOTH when evaluating this ad account. |
 | `act_1231977889107681` | Clasicoo-IST-CAD | CAD | `52j1ga-hz.myshopify.com` (?) |
 | `act_1214314967570733` | The AyurPet (Read-Only) | INR | — (read-only, reporting only; not ad delivery) |
 
@@ -88,27 +88,28 @@ All callback domains: **`https://shopify.glitchexecutor.com`** (must match exact
 - **Meta Ads account:** `act_1765937727381511` — **URBAN-CAD-IST** (CAD, New York, status=3)
   - Secondary / earlier: `act_1909845012991177` "Urban-CAD-IST" (CAD, Philadelphia), `act_769104785114570` "urban global" (CAD, Lake Elsinore)
 
-### Ayurpet (primary) — `1ygbmd-pr.myshopify.com`
+### Ayurpet (India storefront) — `1ygbmd-pr.myshopify.com`
 
 - **Store handle:** `ayurpet` (admin.shopify.com/store/ayurpet)
+- **Role:** India-market sales storefront. Traffic from India-targeted Meta ads lands here.
 - **Custom App:** `ayurpet-ind`
 - **Install URL:** `https://shopify.glitchexecutor.com/auth/ayurpet-ind/install?shop=1ygbmd-pr.myshopify.com`
 - **Installed:** 2026-04-15
-- **Scopes granted:** `write_files, write_inventory, read_locales, write_online_store_navigation, read_orders, read_product_listings, write_products, write_content, write_themes, write_translations`
-- **⚠ Scope fix required for cod-confirm:** grant `write_orders` (currently only `read_orders`). Edit the Custom App's API scopes in Shopify admin → re-approve the OAuth (re-visit the install URL).
-- **Meta Ads account:** `act_654879327196107` — **AyurPet – Ad Acc. 1** (INR, ₹7.3L lifetime spend) — confirmed 2026-04-15. This account also feeds the sibling store `2684sq-mt.myshopify.com`; ROAS must be reconciled across BOTH storefronts.
+- **Scopes granted:** full baseline incl. `write_orders` (updated 2026-04-15).
+- **cod-confirm status:** not enrolled (user decision — NOT running voice-AI confirmation on Ayurpet for now).
+- **Meta Ads account:** `act_654879327196107` — **AyurPet – Ad Acc. 1** (INR, ₹7.3L lifetime spend). Also drives the Global storefront below.
   - Reporting-only alternate: `act_1214314967570733` "The AyurPet (Read-Only)" (INR, 0 spend) — not used for delivery.
 
-### Ayurpet (secondary?) — `2684sq-mt.myshopify.com`
+### Ayurpet (Global storefront) — `2684sq-mt.myshopify.com`
 
 - **Store handle:** `2684sq-mt` (admin.shopify.com/store/2684sq-mt)
+- **Role:** Global-market sales storefront (ex-India). Traffic from geo-targeted Meta ads for Global audiences lands here.
 - **Custom App:** `ayurpet`
 - **Install URL:** `https://shopify.glitchexecutor.com/auth/ayurpet/install?shop=2684sq-mt.myshopify.com`
 - **Installed:** 2026-04-15
-- **Scopes granted:** `write_files, write_inventory, read_locales, write_online_store_navigation, read_orders, read_product_listings, write_products, write_content, write_themes, write_translations`
-- **⚠ Scope fix required:** same as above — grant `write_orders`.
-- **Meta Ads account:** `act_654879327196107` — **AyurPet – Ad Acc. 1** (shared with `1ygbmd-pr.myshopify.com`). Both Ayurpet storefronts are driven by the same single ad account. When calculating ROAS on this ad account, sum revenue from BOTH Shopify stores.
-- **Relationship to primary Ayurpet store:** sibling (same client, shared ad spend pool). Specific role of this secondary storefront — TBD (user to clarify: COD-only? regional split? staging? separate SKU set?).
+- **Scopes granted:** full baseline incl. `write_orders` (updated 2026-04-15).
+- **cod-confirm status:** not enrolled (global markets typically not COD-heavy; revisit if Global storefront starts offering COD in markets like UAE, Bangladesh, etc.).
+- **Meta Ads account:** `act_654879327196107` — **AyurPet – Ad Acc. 1** (shared with India storefront). Ad account is configured in INR even though it drives Global sales — **flag this for the ad-account diagnostic below**.
 
 ### Classicoo & older stores
 
