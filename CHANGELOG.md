@@ -13,7 +13,9 @@ Body text (if present) shown as indented sub-bullets.
 
 ## 2026-04-15
 
-- **00:10 UTC** — auto-sync: 2026-04-15 00:10 UTC (`231d722`) — 4 files
+- **00:16 UTC** — auto-sync: 2026-04-15 00:16 UTC (`6148c8d`) — 1 file
+        M	shopify.app.toml
+- **00:10 UTC** — auto-sync: 2026-04-15 00:10 UTC (`5b55a77`) — 5 files
         A	app/routes/webhooks.customers.data_request.jsx
         A	app/routes/webhooks.customers.redact.jsx
         A	app/routes/webhooks.shop.redact.jsx
