@@ -13,7 +13,10 @@ Body text (if present) shown as indented sub-bullets.
 
 ## 2026-04-15
 
-- **05:30 UTC** — auto-sync: 2026-04-15 05:30 UTC (`d75d03a`) — 1 file
+- **19:15 UTC** — auto-sync: 2026-04-15 19:15 UTC (`68d1c8a`) — 2 files
+        A	app/routes/auth.ayurpet-ind.$.jsx
+        A	app/routes/auth.ayurpet.$.jsx
+- **05:30 UTC** — auto-sync: 2026-04-15 05:30 UTC (`87cea40`) — 2 files
         A	cli/_urban_adset_join.mjs
 - **04:30 UTC** — auto-sync: 2026-04-15 04:30 UTC (`b097d79`) — 2 files
         M	cli/shops.json
