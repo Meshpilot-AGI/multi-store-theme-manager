@@ -41,7 +41,7 @@ read_locales, write_online_store_navigation
 | Store | Action | URL |
 |---|---|---|
 | Urban Classics | re-install (add 5 read scopes) | `https://shopify.glitchexecutor.com/auth/urban/install?shop=f51039.myshopify.com` |
-| Storico | fresh install | `https://shopify.glitchexecutor.com/auth/storico/install?shop=ys4n0u-ys.myshopify.com` |
+| Storico | re-install (add 5 read scopes — baseline already installed) | `https://shopify.glitchexecutor.com/auth/storico/install?shop=ys4n0u-ys.myshopify.com` |
 | Classicoo | re-install (add 6 scopes incl. write_orders) | `https://shopify.glitchexecutor.com/auth/classicoo/install?shop=52j1ga-hz.myshopify.com` |
 | Trendsetters | fresh install | `https://shopify.glitchexecutor.com/auth/trendsetters/install?shop=acmsuy-g0.myshopify.com` |
 
@@ -51,6 +51,12 @@ read_locales, write_online_store_navigation
 |---|---|---|
 | Ayurpet (India) | re-install (add 5 read scopes) | `https://shopify.glitchexecutor.com/auth/ayurpet-ind/install?shop=1ygbmd-pr.myshopify.com` |
 | Ayurpet (Global) | re-install (add 5 read scopes) | `https://shopify.glitchexecutor.com/auth/ayurpet/install?shop=2684sq-mt.myshopify.com` |
+
+**Mokshya (standalone):**
+
+| Store | Action | URL |
+|---|---|---|
+| Mokshya | re-install (existing token 401s, plus 6 scopes missing) | `https://shopify.glitchexecutor.com/auth/mokshya/install?shop=5u7mdi-ap.myshopify.com` |
 
 ### What the merchant needs to do BEFORE clicking the install URL
 
@@ -82,12 +88,12 @@ read_locales, write_online_store_navigation
 | Family | Client / brand | Store handle | myshopify domain | Custom App | Scope status | Meta Ads account |
 |---|---|---|---|---|---|---|
 | Urban | Urban Classics | urban-classics-hd | `f51039.myshopify.com` | `urban` | ✅ write_orders | `act_1765937727381511` URBAN-CAD-IST |
-| Urban | **Storico** | TBD | `ys4n0u-ys.myshopify.com` | `storico` | ⏳ creds issued + auth route live, pending merchant install | TBD |
+| Urban | **Storico** | TBD | `ys4n0u-ys.myshopify.com` | `storico` | ✅ installed with baseline scopes — needs re-install for +5 read scopes | TBD |
 | Urban | Classicoo | TBD | `52j1ga-hz.myshopify.com` | `classicoo` | ⚠ needs re-install for new scopes (6 missing) | `act_1231977889107681` Clasicoo-IST-CAD (?) |
 | Urban | **Trendsetters** | TBD | `acmsuy-g0.myshopify.com` | `trendsetters` | ⏳ creds issued + auth route live, pending merchant install | TBD |
 | Ayurpet | Ayurpet (India) | ayurpet | `1ygbmd-pr.myshopify.com` | `ayurpet-ind` | ✅ write_orders (updated 2026-04-15) | `act_654879327196107` AyurPet – Ad Acc. 1 |
 | Ayurpet | Ayurpet (Global) | 2684sq-mt | `2684sq-mt.myshopify.com` | `ayurpet` | ✅ write_orders (updated 2026-04-15) | `act_654879327196107` AyurPet – Ad Acc. 1 (same — India + Global feed from one ad account) |
-| Mokshya | **Mokshya** | TBD | TBD | TBD | ⏳ creds not issued | TBD |
+| Mokshya | **Mokshya** | TBD | `5u7mdi-ap.myshopify.com` | `mokshya` (shares default app creds) | ⚠ existing token 401s — needs re-install | TBD |
 | Internal | Glitch SEO (test) | glitch-seo-test-1 | `glitch-seo-test-1.myshopify.com` | public app (Glitch SEO) | n/a | n/a |
 
 **Total active client storefronts: 7** (Urban × 4 planned, Ayurpet × 2, Mokshya × 1) — 4 installed (Urban Classics, Ayurpet India, Ayurpet Global, Classicoo-partial), 1 credentials-issued (Storico), 2 not yet onboarded (Trendsetters, Mokshya).
@@ -120,8 +126,10 @@ All install URLs live in **`/home/support/multi-store-theme-manager/app/routes/a
 | `urban` | `/auth/urban/install?shop=<shop>.myshopify.com` | `/auth/urban/callback` | `URBAN_*` |
 | `storico` | `/auth/storico/install?shop=<shop>.myshopify.com` | `/auth/storico/callback` | `STORICO_*` |
 | `classicoo` | `/auth/classicoo/install?shop=<shop>.myshopify.com` | `/auth/classicoo/callback` | `CLASSICOO_*` |
+| `trendsetters` | `/auth/trendsetters/install?shop=<shop>.myshopify.com` | `/auth/trendsetters/callback` | `TRENDSETTERS_*` |
 | `ayurpet-ind` | `/auth/ayurpet-ind/install?shop=<shop>.myshopify.com` | `/auth/ayurpet-ind/callback` | `AYURPET_IND_*` |
 | `ayurpet` | `/auth/ayurpet/install?shop=<shop>.myshopify.com` | `/auth/ayurpet/callback` | `AYURPET_*` |
+| `mokshya` | `/auth/mokshya/install?shop=<shop>.myshopify.com` | `/auth/mokshya/callback` | `MOKSHYA_*` (alias of `SHOPIFY_API_KEY`/`SECRET`) |
 
 All callback domains: **`https://shopify.glitchexecutor.com`** (must match exactly in Shopify's Allowed Redirection URLs).
 
@@ -164,13 +172,13 @@ All callback domains: **`https://shopify.glitchexecutor.com`** (must match exact
 - **Custom App credentials:** issued 2026-04-16, filed in `/home/support/multi-store-theme-manager/.env` as `STORICO_CLIENT_ID` + `STORICO_CLIENT_SECRET`
 - **OAuth callback (register in Shopify Custom App):** `https://shopify.glitchexecutor.com/auth/storico/callback`
 - **Install URL (send to merchant):** `https://shopify.glitchexecutor.com/auth/storico/install?shop=ys4n0u-ys.myshopify.com`
-- **Status:** ⏳ auth-hub route `auth.storico.$.jsx` not yet created; merchant has not completed OAuth install.
+- **Auth-hub route:** ✅ `app/routes/auth.storico.$.jsx` created 2026-04-16, `shopify-app.service` restarted, route returns 302 to Shopify OAuth (verified).
+- **Status:** ✅ already installed via OAuth before 2026-04-16 scope unification — offline session present in Prisma with a working `shpca_...` token and the baseline 9-scope set (no read_orders, no read_customers). Re-install via the URL above will upgrade to the full unified 15-scope baseline.
 - **Next steps:**
-  1. Create `app/routes/auth.storico.$.jsx` from the classicoo template.
-  2. Add `STORICO_*` env vars, rebuild, restart `shopify-app.service`.
-  3. Send install URL to merchant; confirm session lands in Prisma `Session` table.
-  4. Run `python ops/scripts/register_webhooks.py --store storico` in the ads-agent repo.
-  5. Backfill: `python ops/scripts/backfill_posthog.py --store storico --days 90`.
+  1. Merchant enables unified scopes in their Custom App admin UI.
+  2. Merchant clicks re-install URL → fresh `offline_*` session overwrites the old one, with full scopes.
+  3. `python ops/scripts/register_webhooks.py --store storico` from the ads-agent repo (registers the 5 order webhooks).
+  4. `python ops/scripts/backfill_posthog.py --store storico --days 90`.
 - **Meta Ads account:** TBD (family shares Meta account space with Urban / Classicoo; assignment depends on merchant's spend plan).
 
 #### Classicoo — `52j1ga-hz.myshopify.com`
@@ -181,11 +189,19 @@ All callback domains: **`https://shopify.glitchexecutor.com`** (must match exact
 - **Scope bump required:** add `read_orders, write_orders, read_customers, read_products, read_analytics, read_reports` to `CLASSICOO_SCOPES` in auth-hub `.env`, rebuild, force merchant re-consent.
 - **Meta Ads account:** `act_1231977889107681` — **Clasicoo-IST-CAD** (CAD, ownership to confirm)
 
-#### Trendsetters — TBD
+#### Trendsetters — `acmsuy-g0.myshopify.com`
 
-- **Status:** ⏳ not yet onboarded. Custom App credentials not yet issued.
-- **Planned app name:** `trendsetters`
-- **Planned callback:** `https://shopify.glitchexecutor.com/auth/trendsetters/callback`
+- **Store handle:** TBD (not yet installed)
+- **Custom App:** `trendsetters`
+- **Custom App credentials:** issued 2026-04-16, filed in `/home/support/multi-store-theme-manager/.env` as `TRENDSETTERS_CLIENT_ID` + `TRENDSETTERS_CLIENT_SECRET`.
+- **OAuth callback (register in Shopify Custom App):** `https://shopify.glitchexecutor.com/auth/trendsetters/callback`
+- **Install URL (send to merchant):** `https://shopify.glitchexecutor.com/auth/trendsetters/install?shop=acmsuy-g0.myshopify.com`
+- **Auth-hub route:** ✅ `app/routes/auth.trendsetters.$.jsx` created 2026-04-16, `shopify-app.service` restarted, route returns 302 to Shopify OAuth (verified).
+- **Status:** ⏳ awaiting merchant to (1) configure unified scopes in their Custom App admin UI, (2) click the install URL.
+- **Next steps (once installed):**
+  1. `python ops/scripts/register_webhooks.py --store trendsetters` from the ads-agent repo.
+  2. `python ops/scripts/backfill_posthog.py --store trendsetters --days 90`.
+- **Meta Ads account:** TBD (Urban family — assignment depends on merchant's spend plan).
 
 ---
 
@@ -222,18 +238,25 @@ Both storefronts share a single Meta Ads account (`act_654879327196107`). ROAS m
 
 ### Mokshya (standalone)
 
-#### Mokshya — TBD
+#### Mokshya — `5u7mdi-ap.myshopify.com`
 
-- **Status:** ⏳ not yet onboarded. Custom App credentials not yet issued.
-- **Planned app name:** `mokshya`
-- **Planned callback:** `https://shopify.glitchexecutor.com/auth/mokshya/callback`
-- **Brand context:** Western-seeker targeting, spiritual/Hinduism-adjacent (not Indian diaspora).
+- **Store handle:** TBD
+- **Custom App:** `mokshya` — **shares credentials** with the auth-hub default app (`SHOPIFY_API_KEY` = `75d0ca694c091038f5977bff53a8c326`, `SHOPIFY_API_SECRET` = `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`). For symmetry with the other slugs, `MOKSHYA_CLIENT_ID` and `MOKSHYA_CLIENT_SECRET` env vars alias those values in `/home/support/multi-store-theme-manager/.env`.
+- **OAuth callback (register in Shopify Custom App):** `https://shopify.glitchexecutor.com/auth/mokshya/callback`
+- **Install URL (send to merchant):** `https://shopify.glitchexecutor.com/auth/mokshya/install?shop=5u7mdi-ap.myshopify.com`
+- **Auth-hub route:** ✅ `app/routes/auth.mokshya.$.jsx` created 2026-04-16, `shopify-app.service` restarted, route returns 302 to Shopify OAuth (verified).
+- **Status:** ⚠ existing `offline_5u7mdi-ap.myshopify.com` session has a token that Shopify rejects with 401 (`Invalid API key or access token`). Root cause unclear — likely revoked when Custom App config was edited in merchant admin at some point. Merchant needs to re-install once unified scopes are enabled.
+- **Next steps:**
+  1. Merchant enables the unified scope set in their Custom App admin UI.
+  2. Merchant clicks the install URL; fresh `offline_*` session lands in Prisma with working token.
+  3. `python ops/scripts/register_webhooks.py --store mokshya` from the ads-agent repo.
+  4. `python ops/scripts/backfill_posthog.py --store mokshya --days 90`.
+- **Brand context:** Western-seeker targeting, spiritual/Hinduism-adjacent (not Indian diaspora — see `project_mokshya_positioning` memory).
+- **Meta Ads account:** TBD (standalone — not shared with Urban or Ayurpet families).
 
 ---
 
-### Retired / removed
-
-- `5u7mdi-ap.myshopify.com` — previously listed as "Classicoo secondary". Session is dead (401 Invalid API key) as of 2026-04-16. Removed from active list per family restructure (Classicoo is a single storefront in the Urban family; no legitimate secondary). If the store comes back online under a different client, add it as a fresh row in the right family.
+### Internal / test
 
 - `glitch-seo-test-1.myshopify.com` — internal test store for the Glitch SEO public app, no ad account, no client-store role. Kept in Summary for completeness but does not count toward the 7 client storefronts.
 
@@ -260,3 +283,5 @@ All six services share the same Postgres at `127.0.0.1:5432/shopify_app` (table 
 - **2026-04-15 (later)** — user confirmed: both Ayurpet Shopify stores (`1ygbmd-pr` + `2684sq-mt`) share a single Meta Ads account (`act_654879327196107`). Added reverse-view table so ROAS reconciliation is obvious at a glance. `2684sq-mt` role within the Ayurpet brand still TBD.
 - **2026-04-16** — Glitch Grow Ads Agent (`/home/support/glitch-grow-ads-agent`) deployed at `insights.glitchexecutor.com`. 15 Shopify webhooks registered across Urban + both Ayurpets; 338 orders backfilled to PostHog (Urban 82 / Ayurpet India 137 / Ayurpet Global 119). `cod-confirm` webhook on Urban preserved (script never touches other services' hooks).
 - **2026-04-16 (restructure)** — introduced **client family** grouping: Urban family (Urban Classics, Storico, Classicoo, Trendsetters), Ayurpet family (India + Global), Mokshya standalone. Added **Storico** (`ys4n0u-ys.myshopify.com`, Custom App `storico`, creds issued 2026-04-16). Added **Trendsetters** and **Mokshya** as onboarding placeholders. Removed `5u7mdi-ap.myshopify.com` (dead session, not a real storefront). Total active client storefronts: 7 — 4 installed, 1 credentials-issued, 2 not yet onboarded.
+- **2026-04-16 (scope unification)** — all `*_SCOPES` env vars in auth hub bumped to unified 15-scope analytics-ready baseline (read_orders, write_orders, read_customers, read_products, write_products, read_product_listings, read_analytics, read_reports, write_content, write_files, write_themes, write_translations, write_inventory, read_locales, write_online_store_navigation). Added **Trendsetters** creds (`acmsuy-g0.myshopify.com`, Custom App `trendsetters`). Created `auth.storico.$.jsx` and `auth.trendsetters.$.jsx` routes. Rebuilt + restarted `shopify-app.service`, both new routes verified live. All 4 already-installed stores (Urban Classics, Classicoo, Ayurpet India, Ayurpet Global) need merchant re-install after they enable the new scopes in their Custom App admin UI — install URLs listed at the top of this doc. Also updated ads-agent `.env` `SHOPIFY_WEBHOOK_SECRETS` to include storico + trendsetters HMAC secrets, and ads-agent `src/ads_agent/config.py` to register all 6 stores.
+- **2026-04-16 (Mokshya correction)** — corrected `5u7mdi-ap.myshopify.com` identity: it is **Mokshya**, not a dead Classicoo secondary. Uses the auth-hub default app credentials (`SHOPIFY_API_KEY/SECRET`). Created `auth.mokshya.$.jsx` route + `MOKSHYA_*` env var aliases. Rebuilt + restarted auth hub, install URL verified. Store count reaches **7 client storefronts confirmed**. Existing token 401s (likely revoked when Custom App was last edited) — merchant re-install required via `https://shopify.glitchexecutor.com/auth/mokshya/install?shop=5u7mdi-ap.myshopify.com`.
