@@ -8,8 +8,9 @@ between _store handle_ (admin.shopify.com/store/&lt;handle&gt;), _myshopify
 subdomain_ (X.myshopify.com), _Custom App_ (per-client), and _Meta Ads account_
 becomes impossible to hold in memory. This is the map.
 
-**How to read:** each store has ONE row in the summary table, then a detail
-section below with full credentials and install state.
+**How to read:** stores are grouped into **client families** (a family shares a
+merchant/owner and often an ad account). Each store has ONE row in the summary
+table, then a detail section below with full credentials and install state.
 
 **When to update:** after any install / re-install / scope change / ad-account
 re-attach / domain change. This repo auto-syncs to GitHub every 15 min
@@ -17,16 +18,26 @@ re-attach / domain change. This repo auto-syncs to GitHub every 15 min
 
 ---
 
+## Client families
+
+- **Urban family** (CAD, North America merchant group): Urban Classics, Storico, Classicoo, Trendsetters
+- **Ayurpet family** (INR): Ayurpet India, Ayurpet Global — share one ad account across both storefronts
+- **Mokshya** (standalone)
+
 ## Summary (Shopify store → ad account)
 
-| Client / brand | Store handle | myshopify domain | Custom App | Scope status | Meta Ads account |
-|---|---|---|---|---|---|
-| Urban Classics | urban-classics-hd | `f51039.myshopify.com` | `urban` | ✅ write_orders | `act_1765937727381511` URBAN-CAD-IST |
-| **Ayurpet (India)** | ayurpet | `1ygbmd-pr.myshopify.com` | `ayurpet-ind` | ✅ write_orders (updated 2026-04-15) | `act_654879327196107` AyurPet – Ad Acc. 1 |
-| **Ayurpet (Global)** | 2684sq-mt | `2684sq-mt.myshopify.com` | `ayurpet` | ✅ write_orders (updated 2026-04-15) | `act_654879327196107` AyurPet – Ad Acc. 1 (same — India + Global feed from one ad account) |
-| Classicoo (?) | — | `52j1ga-hz.myshopify.com` | `classicoo` | no write_orders | `act_1231977889107681` Clasicoo-IST-CAD (?) |
-| Classicoo (?) | — | `5u7mdi-ap.myshopify.com` | `classicoo` | no write_orders | TBD |
-| Internal | glitch-seo-test-1 | `glitch-seo-test-1.myshopify.com` | public app (Glitch SEO) | n/a | n/a |
+| Family | Client / brand | Store handle | myshopify domain | Custom App | Scope status | Meta Ads account |
+|---|---|---|---|---|---|---|
+| Urban | Urban Classics | urban-classics-hd | `f51039.myshopify.com` | `urban` | ✅ write_orders | `act_1765937727381511` URBAN-CAD-IST |
+| Urban | **Storico** | TBD | `ys4n0u-ys.myshopify.com` | `storico` | ⏳ creds issued, not installed | TBD |
+| Urban | Classicoo | TBD | `52j1ga-hz.myshopify.com` | `classicoo` | ⚠ no write_orders (order webhooks fail) | `act_1231977889107681` Clasicoo-IST-CAD (?) |
+| Urban | **Trendsetters** | TBD | TBD | TBD | ⏳ not yet onboarded | TBD |
+| Ayurpet | Ayurpet (India) | ayurpet | `1ygbmd-pr.myshopify.com` | `ayurpet-ind` | ✅ write_orders (updated 2026-04-15) | `act_654879327196107` AyurPet – Ad Acc. 1 |
+| Ayurpet | Ayurpet (Global) | 2684sq-mt | `2684sq-mt.myshopify.com` | `ayurpet` | ✅ write_orders (updated 2026-04-15) | `act_654879327196107` AyurPet – Ad Acc. 1 (same — India + Global feed from one ad account) |
+| Mokshya | **Mokshya** | TBD | TBD | TBD | ⏳ not yet onboarded | TBD |
+| Internal | Glitch SEO (test) | glitch-seo-test-1 | `glitch-seo-test-1.myshopify.com` | public app (Glitch SEO) | n/a | n/a |
+
+**Total active client storefronts: 7** (Urban × 4 planned, Ayurpet × 2, Mokshya × 1) — 4 installed (Urban Classics, Ayurpet India, Ayurpet Global, Classicoo-partial), 1 credentials-issued (Storico), 2 not yet onboarded (Trendsetters, Mokshya).
 
 ## Reverse view (ad account → Shopify stores)
 
@@ -40,9 +51,10 @@ Useful when reconciling ROAS across multiple storefronts that feed from one ad s
 | `act_1214314967570733` | The AyurPet (Read-Only) | INR | — (read-only, reporting only; not ad delivery) |
 
 **Legend:**
+- **Family** = merchant / brand group. Shared family often shares contact owner + similar commercial terms.
 - **Custom App** = the `auth.<app-name>.$.jsx` route + `<APPNAME>_CLIENT_ID` env var in the auth-hub repo (`multi-store-theme-manager`).
-- **Scope status:** ✅ = has write_orders (cod-confirm Shopify tag write-back works); ⚠ = missing, must be added in the Custom App's admin panel before cod-confirm can tag orders.
-- `(?)` = needs user confirmation.
+- **Scope status:** ✅ = has write_orders (cod-confirm Shopify tag write-back works + ads agent receives order webhooks); ⚠ = missing, must be added in the Custom App's admin panel; ⏳ = pending install / onboarding.
+- `TBD` = field to fill once the store is onboarded.
 
 ---
 
@@ -53,6 +65,7 @@ All install URLs live in **`/home/support/multi-store-theme-manager/app/routes/a
 | App name | Install URL (give to merchant once) | OAuth callback (register in Shopify Custom App config) | Env-var prefix |
 |---|---|---|---|
 | `urban` | `/auth/urban/install?shop=<shop>.myshopify.com` | `/auth/urban/callback` | `URBAN_*` |
+| `storico` | `/auth/storico/install?shop=<shop>.myshopify.com` | `/auth/storico/callback` | `STORICO_*` |
 | `classicoo` | `/auth/classicoo/install?shop=<shop>.myshopify.com` | `/auth/classicoo/callback` | `CLASSICOO_*` |
 | `ayurpet-ind` | `/auth/ayurpet-ind/install?shop=<shop>.myshopify.com` | `/auth/ayurpet-ind/callback` | `AYURPET_IND_*` |
 | `ayurpet` | `/auth/ayurpet/install?shop=<shop>.myshopify.com` | `/auth/ayurpet/callback` | `AYURPET_*` |
@@ -77,7 +90,9 @@ All callback domains: **`https://shopify.glitchexecutor.com`** (must match exact
 
 ## Per-store details
 
-### Urban Classics — `f51039.myshopify.com`
+### Urban family
+
+#### Urban Classics — `f51039.myshopify.com`
 
 - **Store handle:** `urban-classics-hd` (admin.shopify.com/store/urban-classics-hd)
 - **Custom App:** `urban`
@@ -85,10 +100,47 @@ All callback domains: **`https://shopify.glitchexecutor.com`** (must match exact
 - **Installed:** 2026-03 (baseline)
 - **Scopes granted:** `write_files, write_inventory, read_locales, write_online_store_navigation, write_orders, read_product_listings, write_products, write_content, write_themes, write_translations`
 - **cod-confirm:** ✅ live, validated end-to-end on 2026-04-15 (Sarvam Bulbul v3 + Vobiz SIP)
+- **ads agent:** ✅ 5 webhooks registered 2026-04-16 (ORDERS_CREATE / PAID / FULFILLED / CANCELLED / REFUNDS_CREATE), cod-confirm webhook preserved, 82 orders backfilled to PostHog
 - **Meta Ads account:** `act_1765937727381511` — **URBAN-CAD-IST** (CAD, New York, status=3)
   - Secondary / earlier: `act_1909845012991177` "Urban-CAD-IST" (CAD, Philadelphia), `act_769104785114570` "urban global" (CAD, Lake Elsinore)
 
-### Ayurpet (India storefront) — `1ygbmd-pr.myshopify.com`
+#### Storico — `ys4n0u-ys.myshopify.com`
+
+- **Store handle:** TBD (not yet installed)
+- **Custom App:** `storico`
+- **Custom App credentials:** issued 2026-04-16, filed in `/home/support/multi-store-theme-manager/.env` as `STORICO_CLIENT_ID` + `STORICO_CLIENT_SECRET`
+- **OAuth callback (register in Shopify Custom App):** `https://shopify.glitchexecutor.com/auth/storico/callback`
+- **Install URL (send to merchant):** `https://shopify.glitchexecutor.com/auth/storico/install?shop=ys4n0u-ys.myshopify.com`
+- **Status:** ⏳ auth-hub route `auth.storico.$.jsx` not yet created; merchant has not completed OAuth install.
+- **Next steps:**
+  1. Create `app/routes/auth.storico.$.jsx` from the classicoo template.
+  2. Add `STORICO_*` env vars, rebuild, restart `shopify-app.service`.
+  3. Send install URL to merchant; confirm session lands in Prisma `Session` table.
+  4. Run `python ops/scripts/register_webhooks.py --store storico` in the ads-agent repo.
+  5. Backfill: `python ops/scripts/backfill_posthog.py --store storico --days 90`.
+- **Meta Ads account:** TBD (family shares Meta account space with Urban / Classicoo; assignment depends on merchant's spend plan).
+
+#### Classicoo — `52j1ga-hz.myshopify.com`
+
+- **Store handle:** TBD
+- **Custom App:** `classicoo`
+- **Status:** installed (session present in Prisma), but ⚠ **no write_orders scope** → order webhooks cannot be registered (`webhookSubscriptionCreate` returns "cannot create webhook subscription with the specified topic"), and ads agent cannot track orders from this store until scopes are bumped.
+- **Scope bump required:** add `read_orders, write_orders, read_customers, read_products, read_analytics, read_reports` to `CLASSICOO_SCOPES` in auth-hub `.env`, rebuild, force merchant re-consent.
+- **Meta Ads account:** `act_1231977889107681` — **Clasicoo-IST-CAD** (CAD, ownership to confirm)
+
+#### Trendsetters — TBD
+
+- **Status:** ⏳ not yet onboarded. Custom App credentials not yet issued.
+- **Planned app name:** `trendsetters`
+- **Planned callback:** `https://shopify.glitchexecutor.com/auth/trendsetters/callback`
+
+---
+
+### Ayurpet family
+
+Both storefronts share a single Meta Ads account (`act_654879327196107`). ROAS must be computed across BOTH storefronts when evaluating this ad account's performance.
+
+#### Ayurpet (India storefront) — `1ygbmd-pr.myshopify.com`
 
 - **Store handle:** `ayurpet` (admin.shopify.com/store/ayurpet)
 - **Role:** India-market sales storefront. Traffic from India-targeted Meta ads lands here.
@@ -97,10 +149,11 @@ All callback domains: **`https://shopify.glitchexecutor.com`** (must match exact
 - **Installed:** 2026-04-15
 - **Scopes granted:** full baseline incl. `write_orders` (updated 2026-04-15).
 - **cod-confirm status:** not enrolled (user decision — NOT running voice-AI confirmation on Ayurpet for now).
+- **ads agent:** ✅ 5 webhooks registered 2026-04-16, 137 orders backfilled to PostHog.
 - **Meta Ads account:** `act_654879327196107` — **AyurPet – Ad Acc. 1** (INR, ₹7.3L lifetime spend). Also drives the Global storefront below.
   - Reporting-only alternate: `act_1214314967570733` "The AyurPet (Read-Only)" (INR, 0 spend) — not used for delivery.
 
-### Ayurpet (Global storefront) — `2684sq-mt.myshopify.com`
+#### Ayurpet (Global storefront) — `2684sq-mt.myshopify.com`
 
 - **Store handle:** `2684sq-mt` (admin.shopify.com/store/2684sq-mt)
 - **Role:** Global-market sales storefront (ex-India). Traffic from geo-targeted Meta ads for Global audiences lands here.
@@ -109,15 +162,27 @@ All callback domains: **`https://shopify.glitchexecutor.com`** (must match exact
 - **Installed:** 2026-04-15
 - **Scopes granted:** full baseline incl. `write_orders` (updated 2026-04-15).
 - **cod-confirm status:** not enrolled (global markets typically not COD-heavy; revisit if Global storefront starts offering COD in markets like UAE, Bangladesh, etc.).
-- **Meta Ads account:** `act_654879327196107` — **AyurPet – Ad Acc. 1** (shared with India storefront). Ad account is configured in INR even though it drives Global sales — **flag this for the ad-account diagnostic below**.
+- **ads agent:** ✅ 5 webhooks registered 2026-04-16, 119 orders backfilled to PostHog.
+- **Meta Ads account:** `act_654879327196107` — **AyurPet – Ad Acc. 1** (shared with India storefront). Ad account is configured in INR even though it drives Global sales — **flag this for the ad-account diagnostic**.
 
-### Classicoo & older stores
+---
 
-The following stores are installed but not yet fully documented. Please fill in as we verify:
+### Mokshya (standalone)
 
-- `52j1ga-hz.myshopify.com` — Classicoo (?) — Meta Ads `act_1231977889107681` Clasicoo-IST-CAD (?)
-- `5u7mdi-ap.myshopify.com` — Classicoo secondary (?) — Meta Ads TBD
-- `glitch-seo-test-1.myshopify.com` — internal test store, no ad account
+#### Mokshya — TBD
+
+- **Status:** ⏳ not yet onboarded. Custom App credentials not yet issued.
+- **Planned app name:** `mokshya`
+- **Planned callback:** `https://shopify.glitchexecutor.com/auth/mokshya/callback`
+- **Brand context:** Western-seeker targeting, spiritual/Hinduism-adjacent (not Indian diaspora).
+
+---
+
+### Retired / removed
+
+- `5u7mdi-ap.myshopify.com` — previously listed as "Classicoo secondary". Session is dead (401 Invalid API key) as of 2026-04-16. Removed from active list per family restructure (Classicoo is a single storefront in the Urban family; no legitimate secondary). If the store comes back online under a different client, add it as a fresh row in the right family.
+
+- `glitch-seo-test-1.myshopify.com` — internal test store for the Glitch SEO public app, no ad account, no client-store role. Kept in Summary for completeness but does not count toward the 7 client storefronts.
 
 ---
 
@@ -129,9 +194,10 @@ The following stores are installed but not yet fully documented. Please fill in 
 | glitch-grow public app | `/home/support/glitch-grow-public/` (port 3102, `shopify-app-public.service`) | reads offline sessions | Glitch SEO + future Glitch Grow public features. |
 | cod-confirm | `/home/support/glitch-cod-confirm/` (port 3104, `cod-confirm.service`) | reads offline sessions | LiveKit + Sarvam Bulbul v3 voice AI for COD order confirmation. |
 | cod-confirm agent | `/home/support/glitch-cod-confirm/src/livekit-agent.js` (port 8081, `cod-confirm-agent.service`) | via sibling call | LiveKit worker that runs the agent session for each PSTN call. |
+| **ads agent** | `/home/support/glitch-grow-ads-agent/` (port 3110, `glitch-ads-bot.service`, domain `insights.glitchexecutor.com`) | reads sessions (asyncpg RO) | Webhook receiver → PostHog; future LangGraph insights + Meta Ads write-actions via Telegram. |
 | meta ads MCP | `meta-ads-mcp.service` | — | MCP server exposing Meta Ads (read/write) to internal tools. Ad-account IDs above resolve via this. |
 
-All five services share the same Postgres at `127.0.0.1:5432/shopify_app` (table `Session`).
+All six services share the same Postgres at `127.0.0.1:5432/shopify_app` (table `Session`).
 
 ---
 
@@ -139,3 +205,5 @@ All five services share the same Postgres at `127.0.0.1:5432/shopify_app` (table
 
 - **2026-04-15** — initial version. Ayurpet primary + secondary stores installed and enrolled. Urban Classics baseline documented. Meta Ads cross-reference populated from `get_ad_accounts` snapshot.
 - **2026-04-15 (later)** — user confirmed: both Ayurpet Shopify stores (`1ygbmd-pr` + `2684sq-mt`) share a single Meta Ads account (`act_654879327196107`). Added reverse-view table so ROAS reconciliation is obvious at a glance. `2684sq-mt` role within the Ayurpet brand still TBD.
+- **2026-04-16** — Glitch Grow Ads Agent (`/home/support/glitch-grow-ads-agent`) deployed at `insights.glitchexecutor.com`. 15 Shopify webhooks registered across Urban + both Ayurpets; 338 orders backfilled to PostHog (Urban 82 / Ayurpet India 137 / Ayurpet Global 119). `cod-confirm` webhook on Urban preserved (script never touches other services' hooks).
+- **2026-04-16 (restructure)** — introduced **client family** grouping: Urban family (Urban Classics, Storico, Classicoo, Trendsetters), Ayurpet family (India + Global), Mokshya standalone. Added **Storico** (`ys4n0u-ys.myshopify.com`, Custom App `storico`, creds issued 2026-04-16). Added **Trendsetters** and **Mokshya** as onboarding placeholders. Removed `5u7mdi-ap.myshopify.com` (dead session, not a real storefront). Total active client storefronts: 7 — 4 installed, 1 credentials-issued, 2 not yet onboarded.
