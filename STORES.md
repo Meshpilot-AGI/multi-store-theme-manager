@@ -18,6 +18,59 @@ re-attach / domain change. This repo auto-syncs to GitHub every 15 min
 
 ---
 
+## Action — 2026-04-16 scope unification
+
+All stores now request a unified **15-scope analytics-ready baseline** (see below).
+For each merchant, (1) enable the matching scopes in their Shopify Custom App admin UI,
+(2) click the install/re-install URL we send them.
+
+**Unified scope set (in every `*_SCOPES` env var):**
+```
+read_orders, write_orders, read_customers, read_products, write_products,
+read_product_listings, read_analytics, read_reports, write_content,
+write_files, write_themes, write_translations, write_inventory,
+read_locales, write_online_store_navigation
+```
+
+`read_analytics` and `read_reports` are Plus-only — they're silently ignored on non-Plus stores, safe to request on all.
+
+### Install / re-install URLs (ready to send to merchants)
+
+**Urban family:**
+
+| Store | Action | URL |
+|---|---|---|
+| Urban Classics | re-install (add 5 read scopes) | `https://shopify.glitchexecutor.com/auth/urban/install?shop=f51039.myshopify.com` |
+| Storico | fresh install | `https://shopify.glitchexecutor.com/auth/storico/install?shop=ys4n0u-ys.myshopify.com` |
+| Classicoo | re-install (add 6 scopes incl. write_orders) | `https://shopify.glitchexecutor.com/auth/classicoo/install?shop=52j1ga-hz.myshopify.com` |
+| Trendsetters | fresh install | `https://shopify.glitchexecutor.com/auth/trendsetters/install?shop=acmsuy-g0.myshopify.com` |
+
+**Ayurpet family:**
+
+| Store | Action | URL |
+|---|---|---|
+| Ayurpet (India) | re-install (add 5 read scopes) | `https://shopify.glitchexecutor.com/auth/ayurpet-ind/install?shop=1ygbmd-pr.myshopify.com` |
+| Ayurpet (Global) | re-install (add 5 read scopes) | `https://shopify.glitchexecutor.com/auth/ayurpet/install?shop=2684sq-mt.myshopify.com` |
+
+### What the merchant needs to do BEFORE clicking the install URL
+
+1. Shopify admin → **Apps and sales channels** → **Develop apps** → select the Custom App (e.g. "Urban Classics COD").
+2. **Configuration** tab → **Admin API integration** → **Edit**.
+3. Enable these Admin API access scopes (check box for each):
+   - `read_orders`, `write_orders`
+   - `read_customers`
+   - `read_products`, `write_products`, `read_product_listings`
+   - `read_analytics`, `read_reports` (Plus only — don't worry if not listed)
+   - `write_content`, `write_files`, `write_themes`, `write_translations`
+   - `write_inventory`
+   - `read_locales`
+   - `write_online_store_navigation`
+4. **Save**.
+5. **API credentials** tab → confirm the **Allowed redirection URL** matches what's in the per-app detail section below (e.g. `https://shopify.glitchexecutor.com/auth/<app>/callback`). If missing, add it and **Save**.
+6. Then click the install URL above. On success you'll see `✅ Installed on <shop>` with the full scope list.
+
+---
+
 ## Client families
 
 - **Urban family** (CAD, North America merchant group): Urban Classics, Storico, Classicoo, Trendsetters
@@ -29,12 +82,12 @@ re-attach / domain change. This repo auto-syncs to GitHub every 15 min
 | Family | Client / brand | Store handle | myshopify domain | Custom App | Scope status | Meta Ads account |
 |---|---|---|---|---|---|---|
 | Urban | Urban Classics | urban-classics-hd | `f51039.myshopify.com` | `urban` | ✅ write_orders | `act_1765937727381511` URBAN-CAD-IST |
-| Urban | **Storico** | TBD | `ys4n0u-ys.myshopify.com` | `storico` | ⏳ creds issued, not installed | TBD |
-| Urban | Classicoo | TBD | `52j1ga-hz.myshopify.com` | `classicoo` | ⚠ no write_orders (order webhooks fail) | `act_1231977889107681` Clasicoo-IST-CAD (?) |
-| Urban | **Trendsetters** | TBD | TBD | TBD | ⏳ not yet onboarded | TBD |
+| Urban | **Storico** | TBD | `ys4n0u-ys.myshopify.com` | `storico` | ⏳ creds issued + auth route live, pending merchant install | TBD |
+| Urban | Classicoo | TBD | `52j1ga-hz.myshopify.com` | `classicoo` | ⚠ needs re-install for new scopes (6 missing) | `act_1231977889107681` Clasicoo-IST-CAD (?) |
+| Urban | **Trendsetters** | TBD | `acmsuy-g0.myshopify.com` | `trendsetters` | ⏳ creds issued + auth route live, pending merchant install | TBD |
 | Ayurpet | Ayurpet (India) | ayurpet | `1ygbmd-pr.myshopify.com` | `ayurpet-ind` | ✅ write_orders (updated 2026-04-15) | `act_654879327196107` AyurPet – Ad Acc. 1 |
 | Ayurpet | Ayurpet (Global) | 2684sq-mt | `2684sq-mt.myshopify.com` | `ayurpet` | ✅ write_orders (updated 2026-04-15) | `act_654879327196107` AyurPet – Ad Acc. 1 (same — India + Global feed from one ad account) |
-| Mokshya | **Mokshya** | TBD | TBD | TBD | ⏳ not yet onboarded | TBD |
+| Mokshya | **Mokshya** | TBD | TBD | TBD | ⏳ creds not issued | TBD |
 | Internal | Glitch SEO (test) | glitch-seo-test-1 | `glitch-seo-test-1.myshopify.com` | public app (Glitch SEO) | n/a | n/a |
 
 **Total active client storefronts: 7** (Urban × 4 planned, Ayurpet × 2, Mokshya × 1) — 4 installed (Urban Classics, Ayurpet India, Ayurpet Global, Classicoo-partial), 1 credentials-issued (Storico), 2 not yet onboarded (Trendsetters, Mokshya).
