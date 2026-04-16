@@ -18,21 +18,35 @@ re-attach / domain change. This repo auto-syncs to GitHub every 15 min
 
 ---
 
-## Action — 2026-04-16 scope unification
+## Action — 2026-04-16 scope maximalism (final)
 
-All stores now request a unified **15-scope analytics-ready baseline** (see below).
-For each merchant, (1) enable the matching scopes in their Shopify Custom App admin UI,
-(2) click the install/re-install URL we send them.
+**Why this change:** we (glitchexecutor) own all 7 stores. Each scope bump forces a merchant-side Custom App admin UI edit. So we're doing it **once**, with a maximal set that covers every foreseeable ads-ops / analytics / content-tooling / HITL-write use case.
 
-**Unified scope set (in every `*_SCOPES` env var):**
+**Unified 33-scope set** now in every `*_SCOPES` env var (and top-level `SCOPES`). Confirmed accepted by Shopify Custom App admin UI across all 7 stores on 2026-04-16.
+
 ```
-read_orders, write_orders, read_customers, read_products, write_products,
-read_product_listings, read_analytics, read_reports, write_content,
-write_files, write_themes, write_translations, write_inventory,
-read_locales, write_online_store_navigation
+read_orders, write_orders, read_draft_orders, write_draft_orders, read_products,
+write_products, read_inventory, write_inventory, read_customers, write_customers,
+read_content, write_content, read_files, write_files, write_themes,
+read_translations, write_translations, read_online_store_navigation,
+write_online_store_navigation, read_locales, read_price_rules, write_price_rules,
+read_discounts, write_discounts, read_marketing_events, write_marketing_events,
+read_fulfillments, read_locations, read_shipping, read_reports, read_returns,
+read_customer_events, write_pixels
 ```
 
-`read_analytics` and `read_reports` are Plus-only — they're silently ignored on non-Plus stores, safe to request on all.
+Notes:
+- `read_customers` + `write_customers` trigger GDPR handler obligations — already implemented (`webhooks.customers.data_request`, `webhooks.customers.redact`, `webhooks.shop.redact`).
+- `read_reports` is Plus/Advanced-only — silently ignored elsewhere. Safe to request on all.
+- `write_themes` enables code execution on storefront. Needed for Glitch SEO + future CAPI snippet injection.
+- `read_customer_events` + `write_pixels` — required for Web Pixel / customer journey attribution.
+- **Scopes tried and rejected by Shopify Custom App UI** ("Contains invalid scopes"):
+  - `read_all_orders` (gated — Partner Dashboard approval needed for orders older than 60 days)
+  - `read_product_listings` (sales-channel-only legacy REST scope)
+  - `read_purchase_options` (Subscription-API gated)
+  - `read_order_edits`, `read_markets`, `read_metaobjects`, `read_metaobject_definitions`, `read_privacy_settings`, `read_online_store_pages` — rejected by this admin-UI version even though they appear in Shopify's public docs
+  - `read_shopify_payments_payouts`, `read_shopify_payments_disputes` — only valid when store has Shopify Payments enabled
+- Also excluded: `read_users` / `read_gift_cards` (Plus-only), `read_script_tags` / `write_script_tags` (deprecated — use `write_pixels`), `read_customer_payment_methods` (PCI-sensitive), Function-specific scopes (`read_cart_transforms`, `read_validations`, `read_delivery_customizations` — add later only if we build Functions).
 
 ### Install / re-install URLs (ready to send to merchants)
 
@@ -58,22 +72,27 @@ read_locales, write_online_store_navigation
 |---|---|---|
 | Mokshya | re-install (existing token 401s, plus 6 scopes missing) | `https://shopify.glitchexecutor.com/auth/mokshya/install?shop=5u7mdi-ap.myshopify.com` |
 
-### What the merchant needs to do BEFORE clicking the install URL
+### What the merchant needs to do — one-time scope enablement
 
-1. Shopify admin → **Apps and sales channels** → **Develop apps** → select the Custom App (e.g. "Urban Classics COD").
+For each Custom App (one per store), in the **merchant's own Shopify admin**:
+
+1. **Apps and sales channels** → **Develop apps** → open the Custom App.
 2. **Configuration** tab → **Admin API integration** → **Edit**.
-3. Enable these Admin API access scopes (check box for each):
-   - `read_orders`, `write_orders`
-   - `read_customers`
-   - `read_products`, `write_products`, `read_product_listings`
-   - `read_analytics`, `read_reports` (Plus only — don't worry if not listed)
-   - `write_content`, `write_files`, `write_themes`, `write_translations`
-   - `write_inventory`
-   - `read_locales`
-   - `write_online_store_navigation`
-4. **Save**.
-5. **API credentials** tab → confirm the **Allowed redirection URL** matches what's in the per-app detail section below (e.g. `https://shopify.glitchexecutor.com/auth/<app>/callback`). If missing, add it and **Save**.
-6. Then click the install URL above. On success you'll see `✅ Installed on <shop>` with the full scope list.
+3. Enable **all 33 scopes** below. Paste this comma-separated string into the scope field:
+
+```
+read_orders,write_orders,read_draft_orders,write_draft_orders,read_products,write_products,read_inventory,write_inventory,read_customers,write_customers,read_content,write_content,read_files,write_files,write_themes,read_translations,write_translations,read_online_store_navigation,write_online_store_navigation,read_locales,read_price_rules,write_price_rules,read_discounts,write_discounts,read_marketing_events,write_marketing_events,read_fulfillments,read_locations,read_shipping,read_reports,read_returns,read_customer_events,write_pixels
+```
+
+**Read scopes (19):** `read_orders`, `read_draft_orders`, `read_products`, `read_inventory`, `read_customers`, `read_content`, `read_files`, `read_translations`, `read_online_store_navigation`, `read_locales`, `read_price_rules`, `read_discounts`, `read_marketing_events`, `read_fulfillments`, `read_locations`, `read_shipping`, `read_reports`, `read_returns`, `read_customer_events`
+
+**Write scopes (14):** `write_orders`, `write_draft_orders`, `write_products`, `write_inventory`, `write_customers`, `write_content`, `write_files`, `write_themes`, `write_translations`, `write_online_store_navigation`, `write_price_rules`, `write_discounts`, `write_marketing_events`, `write_pixels`
+
+4. **Save** the Admin API scopes.
+5. **API credentials** tab → confirm **Allowed redirection URL(s)** includes our callback for this app (e.g. `https://shopify.glitchexecutor.com/auth/<app>/callback` — see per-store detail below). Add if missing, **Save**.
+6. Click the install/re-install URL we send → Shopify shows a consent screen listing new scopes → click **Install/Update**. Token auto-upgrades in our DB.
+
+**Once-and-done:** after this, no further merchant admin action needed for any future agent feature.
 
 ---
 
@@ -285,3 +304,4 @@ All six services share the same Postgres at `127.0.0.1:5432/shopify_app` (table 
 - **2026-04-16 (restructure)** — introduced **client family** grouping: Urban family (Urban Classics, Storico, Classicoo, Trendsetters), Ayurpet family (India + Global), Mokshya standalone. Added **Storico** (`ys4n0u-ys.myshopify.com`, Custom App `storico`, creds issued 2026-04-16). Added **Trendsetters** and **Mokshya** as onboarding placeholders. Removed `5u7mdi-ap.myshopify.com` (dead session, not a real storefront). Total active client storefronts: 7 — 4 installed, 1 credentials-issued, 2 not yet onboarded.
 - **2026-04-16 (scope unification)** — all `*_SCOPES` env vars in auth hub bumped to unified 15-scope analytics-ready baseline (read_orders, write_orders, read_customers, read_products, write_products, read_product_listings, read_analytics, read_reports, write_content, write_files, write_themes, write_translations, write_inventory, read_locales, write_online_store_navigation). Added **Trendsetters** creds (`acmsuy-g0.myshopify.com`, Custom App `trendsetters`). Created `auth.storico.$.jsx` and `auth.trendsetters.$.jsx` routes. Rebuilt + restarted `shopify-app.service`, both new routes verified live. All 4 already-installed stores (Urban Classics, Classicoo, Ayurpet India, Ayurpet Global) need merchant re-install after they enable the new scopes in their Custom App admin UI — install URLs listed at the top of this doc. Also updated ads-agent `.env` `SHOPIFY_WEBHOOK_SECRETS` to include storico + trendsetters HMAC secrets, and ads-agent `src/ads_agent/config.py` to register all 6 stores.
 - **2026-04-16 (Mokshya correction)** — corrected `5u7mdi-ap.myshopify.com` identity: it is **Mokshya**, not a dead Classicoo secondary. Uses the auth-hub default app credentials (`SHOPIFY_API_KEY/SECRET`). Created `auth.mokshya.$.jsx` route + `MOKSHYA_*` env var aliases. Rebuilt + restarted auth hub, install URL verified. Store count reaches **7 client storefronts confirmed**. Existing token 401s (likely revoked when Custom App was last edited) — merchant re-install required via `https://shopify.glitchexecutor.com/auth/mokshya/install?shop=5u7mdi-ap.myshopify.com`.
+- **2026-04-16 (maximal scope set — final)** — replaced the 15-scope unified baseline with a **41-scope maximal set** covering all foreseeable ads-ops / analytics / content-tooling / HITL-write use cases. Initially tried 44 but Shopify's Custom App UI rejected `read_all_orders` (gated — Partner Dashboard approval), `read_product_listings` (sales-channel legacy REST scope), and `read_purchase_options` (Subscription-API gated). Dropped those three; remaining 41 all validated via live install URL. Key additions vs. previous 15-scope baseline: `read_returns`, `read_fulfillments`, `read_customer_events`, `read_draft_orders` / `write_draft_orders`, `read_order_edits`, `read_marketing_events` / `write_marketing_events`, `read_discounts` / `write_discounts`, `read_price_rules` / `write_price_rules`, `read_markets`, `read_metaobjects` / `read_metaobject_definitions`, `read_shipping`, `read_shopify_payments_payouts` / `_disputes`, `read_privacy_settings`, `read_online_store_pages`, `write_customers`, `write_pixels`. Updated all 8 `*_SCOPES` vars (including top-level `SCOPES`). Rebuilt + restarted auth hub, verified 41-scope OAuth URL for `urban`. This is intended to be the LAST scope change we ask merchants to approve — future agent features will use the already-granted scope set.
