@@ -115,13 +115,13 @@ Source: live Meta ad-accounts snapshot via `meta-ads-mcp get_ad_accounts`, 2026-
 
 | Family | Client / brand | Store handle | myshopify domain | Custom App | Scope status | Primary Meta Ads account |
 |---|---|---|---|---|---|---|
-| Urban | Urban Classics | urban-classics-hd | `f51039.myshopify.com` | `urban` | ✅ full 33 scopes | `act_1765937727381511` URBAN-CAD-IST (CAD, $3.7K spent) |
-| Urban | **Storico** | TBD | `ys4n0u-ys.myshopify.com` | `storico` | ✅ full 33 scopes | `act_1072546905038329` Storico-New-CAD-IST (CAD, $2.6K spent) |
+| Urban | Urban Classics | urban-classics-hd | `f51039.myshopify.com` | `urban` | ✅ full 33 scopes | `act_1909845012991177` Urban-CAD-IST (CAD, $1.2K spent) — ACTIVE; other 2 accounts retired |
+| Urban | **Storico** | TBD | `ys4n0u-ys.myshopify.com` | `storico` | ✅ full 33 scopes | `act_755235000581939` Storico-New-CAD (CAD, $555 lifetime) — ACTIVE; other 5 accounts retired |
 | Urban | Classicoo | TBD | `52j1ga-hz.myshopify.com` | `classicoo` | ✅ full 33 scopes | `act_1231977889107681` Clasicoo-IST-CAD (CAD, $54 spent) |
 | Urban | **Trendsetters** | TBD | `acmsuy-g0.myshopify.com` | `trendsetters` | ✅ full 33 scopes | `act_1445770643706149` Trendsetter-IST-CAD (CAD, $717 spent) |
 | Ayurpet | Ayurpet (India) | ayurpet | `1ygbmd-pr.myshopify.com` | `ayurpet-ind` | ✅ full 33 scopes | `act_654879327196107` AyurPet – Ad Acc. 1 (INR, ₹7.3L spent) |
 | Ayurpet | Ayurpet (Global) | 2684sq-mt | `2684sq-mt.myshopify.com` | `ayurpet` | ✅ full 33 scopes | `act_654879327196107` AyurPet – Ad Acc. 1 (shared with India) |
-| Mokshya | **Mokshya** | TBD | `5u7mdi-ap.myshopify.com` | `mokshya` (alias of default app) | ✅ full 33 scopes | `act_507013211846013` MOKSHYA-CAD-EST (CAD, $2.2K) + `act_30237311672580998` Mokshya-INR-IST (INR, ₹1.8K) |
+| Mokshya | **Mokshya** | TBD | `5u7mdi-ap.myshopify.com` | `mokshya` (alias of default app) | ✅ full 33 scopes | `act_507013211846013` MOKSHYA-CAD-EST (CAD, $2.2K) — **main active**; `act_30237311672580998` Mokshya-INR-IST (INR, ₹1.8K) — secondary, dormant |
 | Internal | Glitch SEO (test) | glitch-seo-test-1 | `glitch-seo-test-1.myshopify.com` | public app (Glitch SEO) | n/a | n/a |
 
 **Total active client storefronts: 7** — all 7 installed, all 7 fully scoped as of 2026-04-16. 35 Shopify webhooks live (5 topics × 7 stores → `https://insights.glitchexecutor.com/shopify/webhook/<shop>`).
@@ -132,25 +132,27 @@ Useful when reconciling ROAS across multiple storefronts that feed from one ad-s
 
 | Meta Ads account | Name | Currency | Spend (lifetime) | Stores served |
 |---|---|---|---|---|
-| `act_1765937727381511` | URBAN-CAD-IST | CAD | $3,711.45 | `f51039.myshopify.com` (Urban Classics) — primary |
-| `act_1909845012991177` | Urban-CAD-IST | CAD | $1,156.14 | `f51039.myshopify.com` (Urban Classics) — secondary |
-| `act_769104785114570` | urban global | CAD | $142.26 | `f51039.myshopify.com` (Urban Classics) — older, Lake Elsinore |
-| `act_1072546905038329` | Storico-New-CAD-IST | CAD | $2,597.57 | `ys4n0u-ys.myshopify.com` (Storico) — primary |
-| `act_1134191618602887` | STORICO-IST-CAD | CAD | $1,675.03 | `ys4n0u-ys.myshopify.com` (Storico) — secondary |
-| `act_755235000581939` | Storico-New-CAD | CAD | $555.93 | `ys4n0u-ys.myshopify.com` (Storico) — Venice |
-| `act_3446595268850626` | Storico-CAD-IST | CAD | $122.09 | `ys4n0u-ys.myshopify.com` (Storico) — Olympia, status=disabled |
-| `act_639776792472184` | STORICO-IST-CAD | CAD | $0 | `ys4n0u-ys.myshopify.com` (Storico) — status=disabled |
-| `act_1506176744351423` | Storico-CAD-IST | CAD | $0 | `ys4n0u-ys.myshopify.com` (Storico) — Buffalo, unused |
+| `act_1909845012991177` | Urban-CAD-IST | CAD | $1,156.14 | `f51039.myshopify.com` (Urban Classics) — **ACTIVE** (the only account agent should sum) |
+| `act_1765937727381511` | URBAN-CAD-IST | CAD | $3,711.45 | Retired — legacy account, lifetime-spend figure is historical only. NOT in `STORE_AD_ACCOUNTS_JSON`. |
+| `act_769104785114570` | urban global | CAD | $142.26 | Retired — earliest Urban test account, Lake Elsinore. NOT in `STORE_AD_ACCOUNTS_JSON`. |
+| `act_755235000581939` | Storico-New-CAD | CAD | $555.93 | `ys4n0u-ys.myshopify.com` (Storico) — **ACTIVE** (the only account agent should sum) |
+| `act_1072546905038329` | Storico-New-CAD-IST | CAD | $2,597.57 | Retired — highest historical lifetime spend but not active per user. NOT in `STORE_AD_ACCOUNTS_JSON`. |
+| `act_1134191618602887` | STORICO-IST-CAD | CAD | $1,675.03 | Retired — Clovis. NOT in `STORE_AD_ACCOUNTS_JSON`. |
+| `act_3446595268850626` | Storico-CAD-IST | CAD | $122.09 | Retired — Olympia, status=disabled. NOT in map. |
+| `act_639776792472184` | STORICO-IST-CAD | CAD | $0 | Retired — never spent, status=disabled. NOT in map. |
+| `act_1506176744351423` | Storico-CAD-IST | CAD | $0 | Retired — Buffalo, never used. NOT in map. |
 | `act_1231977889107681` | Clasicoo-IST-CAD | CAD | $53.81 | `52j1ga-hz.myshopify.com` (Classicoo) |
 | `act_1445770643706149` | Trendsetter-IST-CAD | CAD | $717.20 | `acmsuy-g0.myshopify.com` (Trendsetters) |
 | `act_654879327196107` | AyurPet – Ad Acc. 1 | INR | ₹730,138.31 | `1ygbmd-pr.myshopify.com` (India) + `2684sq-mt.myshopify.com` (Global) — **single account serves both**. ROAS must be reconciled across BOTH storefronts. |
 | `act_1214314967570733` | The AyurPet (Read-Only) | INR | ₹0 | `1ygbmd-pr` + `2684sq-mt` — reporting-only, not ad delivery |
-| `act_507013211846013` | MOKSHYA-CAD-EST | CAD | $2,179.61 | `5u7mdi-ap.myshopify.com` (Mokshya) — CAD delivery |
-| `act_30237311672580998` | Mokshya – INR – IST | INR | ₹1,843.84 | `5u7mdi-ap.myshopify.com` (Mokshya) — INR delivery |
+| `act_507013211846013` | MOKSHYA-CAD-EST | CAD | $2,179.61 | `5u7mdi-ap.myshopify.com` (Mokshya) — **MAIN active** CAD delivery. Currently dormant (0 spend last 30d) but this is the designated primary when Mokshya resumes. |
+| `act_30237311672580998` | Mokshya – INR – IST | INR | ₹1,843.84 | `5u7mdi-ap.myshopify.com` (Mokshya) — secondary INR delivery, dormant. Included in `STORE_AD_ACCOUNTS_JSON` so future spend is automatically counted. |
 
 **Notes:**
-- Urban, Storico, and Mokshya each have **multiple ad accounts** across agencies/timezones. The Summary table lists the highest-spend primary; the Reverse view is the full map. Any ROAS reconciliation must sum spend across all accounts for a given store.
-- Ayurpet + Mokshya follow the same pattern (one brand, multiple currency-specific ad accounts). Agent reconciliation logic should group by `brand`, not `ad_account`, when computing true ROAS.
+- Urban + Storico: user clarified a **single active account** per store; retired accounts kept for historical bookkeeping only, NOT in `STORE_AD_ACCOUNTS_JSON`.
+- Mokshya: dual-currency **by design** (CAD main + INR secondary), but currently dormant (0 recent spend on both). Both kept in `STORE_AD_ACCOUNTS_JSON` so any future spend is automatically summed. `act_507013211846013` is the designated primary when Mokshya resumes.
+- Ayurpet: single ad account (`act_654879327196107`) serves two storefronts (India + Global) — reconciliation sums Shopify revenue across BOTH storefronts currency-normalized vs the one ad account.
+- Retired accounts never enter agent ROAS math. Cleanup happens only via user instruction (changes to `STORE_AD_ACCOUNTS_JSON` in `.env`).
 
 **Legend:**
 - **Family** = merchant / brand group. Shared family often shares contact owner + similar commercial terms.
@@ -206,9 +208,11 @@ All callback domains: **`https://shopify.glitchexecutor.com`** (must match exact
 - **cod-confirm:** ✅ live, validated end-to-end on 2026-04-15 (Sarvam Bulbul v3 + Vobiz SIP)
 - **ads agent:** ✅ 5 webhooks registered (`ORDERS_CREATE`, `_PAID`, `_FULFILLED`, `_CANCELLED`, `REFUNDS_CREATE`), cod-confirm webhook preserved; 441 unique orders in PostHog (90-day window, 82 paid, CAD $446K paid revenue, 72% email coverage).
 - **Meta Ads accounts:**
-  - **Primary:** `act_1765937727381511` — URBAN-CAD-IST (CAD, $3,711.45 spent, New York, status=3 delimited)
-  - Secondary: `act_1909845012991177` — Urban-CAD-IST (CAD, $1,156.14 spent, Philadelphia, status=1 active)
-  - Legacy: `act_769104785114570` — urban global (CAD, $142.26 spent, Lake Elsinore, status=2)
+  - **ACTIVE (only one summed by agent):** `act_1909845012991177` — Urban-CAD-IST (CAD, $1,156.14 lifetime, Philadelphia, status=1)
+  - Retired — lifetime spend is historical only, NOT summed in agent ROAS:
+    - `act_1765937727381511` URBAN-CAD-IST (CAD, $3,711.45 lifetime, New York, status=3 paused)
+    - `act_769104785114570` urban global (CAD, $142.26 lifetime, Lake Elsinore, status=2 disabled)
+  - Clarified 2026-04-16 by user — only `1909845012991177` is the active spend account; other two were pre-restructuring test accounts.
 
 #### Storico — `ys4n0u-ys.myshopify.com`
 
@@ -221,10 +225,15 @@ All callback domains: **`https://shopify.glitchexecutor.com`** (must match exact
 - **Installed:** pre-2026-04-16 with baseline; re-installed 2026-04-16 with full 33-scope set.
 - **Scopes granted:** full unified 33-scope set.
 - **ads agent:** ✅ 5 webhooks registered; 311 unique orders in PostHog (90-day, 109 paid, $697K paid revenue, 52% email, 11% UTM coverage).
-- **Meta Ads accounts (multiple — reconcile ROAS across all):**
-  - **Primary:** `act_1072546905038329` — Storico-New-CAD-IST (CAD, $2,597.57 spent, Philadelphia)
-  - Secondary: `act_1134191618602887` — STORICO-IST-CAD (CAD, $1,675.03 spent, Clovis)
-  - Also live: `act_755235000581939` Storico-New-CAD ($555), `act_3446595268850626` Storico-CAD-IST ($122, disabled), `act_639776792472184` STORICO-IST-CAD ($0, disabled), `act_1506176744351423` Storico-CAD-IST ($0, unused)
+- **Meta Ads accounts:**
+  - **ACTIVE (only one summed by agent):** `act_755235000581939` — Storico-New-CAD (CAD, $555.93 lifetime, Venice, status=1)
+  - Retired — lifetime spend is historical only, NOT summed in agent ROAS:
+    - `act_1072546905038329` Storico-New-CAD-IST (CAD, $2,597.57 lifetime, Philadelphia, status=3)
+    - `act_1134191618602887` STORICO-IST-CAD (CAD, $1,675.03 lifetime, Clovis, status=3)
+    - `act_3446595268850626` Storico-CAD-IST (CAD, $122.09 lifetime, Olympia, status=2 disabled)
+    - `act_639776792472184` STORICO-IST-CAD (CAD, $0, status=2 disabled)
+    - `act_1506176744351423` Storico-CAD-IST (CAD, $0, Buffalo, unused)
+  - Clarified 2026-04-16 by user — only `755235000581939` is the active spend account.
 
 #### Classicoo — `52j1ga-hz.myshopify.com`
 
@@ -295,9 +304,10 @@ Both storefronts share a single Meta Ads account (`act_654879327196107`). ROAS m
 - **Scopes granted:** full unified 33-scope set.
 - **ads agent:** ✅ 5 webhooks registered; 1 unique order in PostHog (90-day window — low-volume store).
 - **Brand context:** Western-seeker targeting, spiritual/Hinduism-adjacent (not Indian diaspora — see `project_mokshya_positioning` memory).
-- **Meta Ads accounts (multiple — reconcile across currencies like Ayurpet):**
-  - **CAD delivery:** `act_507013211846013` — MOKSHYA-CAD-EST (CAD, $2,179.61 spent, status=3)
-  - **INR delivery:** `act_30237311672580998` — Mokshya – INR – IST (INR, ₹1,843.84 spent, Delhi, status=3)
+- **Meta Ads accounts (dual-currency by design; both kept in `STORE_AD_ACCOUNTS_JSON`):**
+  - **MAIN active** (designated primary when Mokshya resumes): `act_507013211846013` — MOKSHYA-CAD-EST (CAD, $2,179.61 lifetime, status=3, currently dormant — 0 spend last 30d)
+  - Secondary dormant: `act_30237311672580998` — Mokshya – INR – IST (INR, ₹1,843.84 lifetime, Delhi, status=3)
+  - Both real accounts, both mapped into `STORE_AD_ACCOUNTS_JSON` — agent sums whichever resumes spending. Clarified by user 2026-04-16.
 
 ---
 
@@ -333,3 +343,6 @@ All six services share the same Postgres at `127.0.0.1:5432/shopify_app` (table 
 - **2026-04-16 (maximal scope set — final)** — replaced the 15-scope unified baseline with a **33-scope maximal set** covering all foreseeable ads-ops / analytics / content-tooling / HITL-write use cases. Iteratively trimmed from 44 → 41 → 33 as Shopify Custom App UI rejected newer scope names. Key additions vs. previous 15-scope baseline: `read_returns`, `read_fulfillments`, `read_customer_events`, `read_draft_orders` / `write_draft_orders`, `read_marketing_events` / `write_marketing_events`, `read_discounts` / `write_discounts`, `read_price_rules` / `write_price_rules`, `read_locations`, `read_shipping`, `write_customers`, `write_pixels`. Updated all 8 `*_SCOPES` vars. All 7 merchants enabled scopes in their Custom App admin UIs and re-installed. All 7 storefronts now running full 33-scope set. This is the LAST scope change — future agent features use the already-granted set.
 - **2026-04-16 (post-enablement verification)** — ran live `read_customers` + `customerJourneySummary` queries across all 7 storefronts: all returned customer emails and UTM attribution (where populated). 35 Shopify webhooks total (5 topics × 7 stores) firing to `insights.glitchexecutor.com`. Backfilled 1,371 order events into PostHog (all lifecycle states, not just paid) with order-native `createdAt` as event timestamp, customer IDs for person-stitching, UTM params flattened as `utm_source/medium/campaign/content/term`, and line-item JSON.
 - **2026-04-16 (doc rename + Meta account refresh)** — renamed `STORES.md` → `SHOPIFY_STORES_INFRA.md` (canonical doc across all Shopify-adjacent workflows — cod-confirm, ads agent, meta-ads-mcp, future services). Live Meta ad-account snapshot pulled via `meta-ads-mcp get_ad_accounts`, Summary + Reverse-view tables updated: Trendsetters → `act_1445770643706149`; Storico → `act_1072546905038329` primary (+ 5 secondary accounts); Mokshya → `act_507013211846013` CAD + `act_30237311672580998` INR (dual-currency like Ayurpet). All account spend figures refreshed.
+- **2026-04-16 (Urban single-account correction)** — user clarified only `act_1909845012991177` is the active Urban ad account; `act_1765937727381511` and `act_769104785114570` are retired. Updated `STORE_AD_ACCOUNTS_JSON` in ads-agent `.env` to include only the active account. Validated: `/roas urban 7` now sums exactly one account (Meta spend 591 CAD, purchases 356, true ROAS 70.44x vs Meta-reported 18.51x — same figures that were already surfacing, confirming the retired accounts had zero recent spend).
+- **2026-04-16 (Storico single-account correction)** — user clarified only `act_755235000581939` (Storico-New-CAD, Venice, $555.93 lifetime) is the active Storico account. Other 5 Storico-named accounts (including the highest-lifetime-spend `act_1072546905038329` at $2.6K) are retired. Updated `STORE_AD_ACCOUNTS_JSON` and validated: `/roas storico 7` now sums exactly one account (Meta spend 373 CAD, purchases 252, true ROAS 36.35x vs Meta-reported 20.06x).
+- **2026-04-16 (Mokshya dual-currency kept, CAD main)** — user clarified both Mokshya accounts are legitimate brand accounts (`act_507013211846013` CAD as MAIN + `act_30237311672580998` INR as secondary). Both currently dormant (0 spend last 30d). Both remain in `STORE_AD_ACCOUNTS_JSON` so any future spend is automatically summed without requiring a config change. CAD designated as primary when Mokshya resumes active advertising.
