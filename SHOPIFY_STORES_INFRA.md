@@ -1,20 +1,27 @@
-# Stores — Shopify installs + Meta Ads mapping
+# Shopify Stores Infra — canonical reference
 
-Single source of truth for which Shopify store uses which Custom App, OAuth
-install/callback path, and which Meta Ads account drives its paid traffic.
+> **Single source of truth** for the Glitch Grow Shopify fleet: store domain ↔ Custom App ↔ OAuth install path ↔ Meta Ads account mapping. Any Shopify-adjacent workflow (cod-confirm, ads agent, glitch-grow-public, meta-ads-mcp, future services) reads this file first.
 
-**Why this file exists:** as we onboard more Glitch Grow clients, the mapping
-between _store handle_ (admin.shopify.com/store/&lt;handle&gt;), _myshopify
-subdomain_ (X.myshopify.com), _Custom App_ (per-client), and _Meta Ads account_
-becomes impossible to hold in memory. This is the map.
+**Canonical home:** `multi-store-theme-manager/SHOPIFY_STORES_INFRA.md` (auto-synced to GitHub every 15 min via `/home/support/bin/git-sync-all`).
 
-**How to read:** stores are grouped into **client families** (a family shares a
-merchant/owner and often an ad account). Each store has ONE row in the summary
-table, then a detail section below with full credentials and install state.
+## What this file maps
 
-**When to update:** after any install / re-install / scope change / ad-account
-re-attach / domain change. This repo auto-syncs to GitHub every 15 min
-(`/home/support/bin/git-sync-all` cron).
+1:1:1:N relationship between, for each client storefront:
+- **Shopify store handle** — `admin.shopify.com/store/<handle>` slug
+- **myshopify subdomain** — `<random>.myshopify.com`, the canonical identifier
+- **Custom App slug** — the `auth.<slug>.$.jsx` route + `<SLUG>_CLIENT_ID/_SECRET/_SCOPES` env vars
+- **Meta Ads account(s)** — usually one per currency; some clients have multiple accounts across agencies
+
+**How to read:** stores are grouped into **client families** (a family shares a merchant/owner and often an ad account across storefronts/currencies). Each store has one row in the Summary table and a detailed block below with credentials, install state, and ad-account mappings.
+
+**When to update:** after any install, re-install, scope change, ad-account attach/detach, domain change, or merchant handover.
+
+**Who consumes this:**
+- `auth-hub` (`multi-store-theme-manager`) — `<SLUG>_*` env vars + `auth.<slug>.$.jsx` routes must match entries here
+- `cod-confirm` — shop → custom-app mapping for session token lookup
+- `glitch-grow-ads-agent` — `src/ads_agent/config.py` STORES tuple + `SHOPIFY_WEBHOOK_SECRETS` map mirror this file
+- `meta-ads-mcp` — ad-account IDs here resolve to MCP queries
+- Future agents / tooling — treat this doc as authoritative, not the memory pointers
 
 ---
 
@@ -104,34 +111,51 @@ read_orders,write_orders,read_draft_orders,write_draft_orders,read_products,writ
 
 ## Summary (Shopify store → ad account)
 
-| Family | Client / brand | Store handle | myshopify domain | Custom App | Scope status | Meta Ads account |
+Source: live Meta ad-accounts snapshot via `meta-ads-mcp get_ad_accounts`, 2026-04-16.
+
+| Family | Client / brand | Store handle | myshopify domain | Custom App | Scope status | Primary Meta Ads account |
 |---|---|---|---|---|---|---|
-| Urban | Urban Classics | urban-classics-hd | `f51039.myshopify.com` | `urban` | ✅ write_orders | `act_1765937727381511` URBAN-CAD-IST |
-| Urban | **Storico** | TBD | `ys4n0u-ys.myshopify.com` | `storico` | ✅ installed with baseline scopes — needs re-install for +5 read scopes | TBD |
-| Urban | Classicoo | TBD | `52j1ga-hz.myshopify.com` | `classicoo` | ⚠ needs re-install for new scopes (6 missing) | `act_1231977889107681` Clasicoo-IST-CAD (?) |
-| Urban | **Trendsetters** | TBD | `acmsuy-g0.myshopify.com` | `trendsetters` | ⏳ creds issued + auth route live, pending merchant install | TBD |
-| Ayurpet | Ayurpet (India) | ayurpet | `1ygbmd-pr.myshopify.com` | `ayurpet-ind` | ✅ write_orders (updated 2026-04-15) | `act_654879327196107` AyurPet – Ad Acc. 1 |
-| Ayurpet | Ayurpet (Global) | 2684sq-mt | `2684sq-mt.myshopify.com` | `ayurpet` | ✅ write_orders (updated 2026-04-15) | `act_654879327196107` AyurPet – Ad Acc. 1 (same — India + Global feed from one ad account) |
-| Mokshya | **Mokshya** | TBD | `5u7mdi-ap.myshopify.com` | `mokshya` (shares default app creds) | ⚠ existing token 401s — needs re-install | TBD |
+| Urban | Urban Classics | urban-classics-hd | `f51039.myshopify.com` | `urban` | ✅ full 33 scopes | `act_1765937727381511` URBAN-CAD-IST (CAD, $3.7K spent) |
+| Urban | **Storico** | TBD | `ys4n0u-ys.myshopify.com` | `storico` | ✅ full 33 scopes | `act_1072546905038329` Storico-New-CAD-IST (CAD, $2.6K spent) |
+| Urban | Classicoo | TBD | `52j1ga-hz.myshopify.com` | `classicoo` | ✅ full 33 scopes | `act_1231977889107681` Clasicoo-IST-CAD (CAD, $54 spent) |
+| Urban | **Trendsetters** | TBD | `acmsuy-g0.myshopify.com` | `trendsetters` | ✅ full 33 scopes | `act_1445770643706149` Trendsetter-IST-CAD (CAD, $717 spent) |
+| Ayurpet | Ayurpet (India) | ayurpet | `1ygbmd-pr.myshopify.com` | `ayurpet-ind` | ✅ full 33 scopes | `act_654879327196107` AyurPet – Ad Acc. 1 (INR, ₹7.3L spent) |
+| Ayurpet | Ayurpet (Global) | 2684sq-mt | `2684sq-mt.myshopify.com` | `ayurpet` | ✅ full 33 scopes | `act_654879327196107` AyurPet – Ad Acc. 1 (shared with India) |
+| Mokshya | **Mokshya** | TBD | `5u7mdi-ap.myshopify.com` | `mokshya` (alias of default app) | ✅ full 33 scopes | `act_507013211846013` MOKSHYA-CAD-EST (CAD, $2.2K) + `act_30237311672580998` Mokshya-INR-IST (INR, ₹1.8K) |
 | Internal | Glitch SEO (test) | glitch-seo-test-1 | `glitch-seo-test-1.myshopify.com` | public app (Glitch SEO) | n/a | n/a |
 
-**Total active client storefronts: 7** (Urban × 4 planned, Ayurpet × 2, Mokshya × 1) — 4 installed (Urban Classics, Ayurpet India, Ayurpet Global, Classicoo-partial), 1 credentials-issued (Storico), 2 not yet onboarded (Trendsetters, Mokshya).
+**Total active client storefronts: 7** — all 7 installed, all 7 fully scoped as of 2026-04-16. 35 Shopify webhooks live (5 topics × 7 stores → `https://insights.glitchexecutor.com/shopify/webhook/<shop>`).
 
 ## Reverse view (ad account → Shopify stores)
 
-Useful when reconciling ROAS across multiple storefronts that feed from one ad spend pool.
+Useful when reconciling ROAS across multiple storefronts that feed from one ad-spend pool.
 
-| Meta Ads account | Name | Currency | Stores served |
-|---|---|---|---|
-| `act_1765937727381511` | URBAN-CAD-IST | CAD | `f51039.myshopify.com` (Urban Classics) |
-| `act_654879327196107` | AyurPet – Ad Acc. 1 | INR | `1ygbmd-pr.myshopify.com` (**India storefront**) + `2684sq-mt.myshopify.com` (**Global storefront**). Single ad account routes traffic to both storefronts based on audience/geo targeting. ROAS must be reconciled across BOTH when evaluating this ad account. |
-| `act_1231977889107681` | Clasicoo-IST-CAD | CAD | `52j1ga-hz.myshopify.com` (?) |
-| `act_1214314967570733` | The AyurPet (Read-Only) | INR | — (read-only, reporting only; not ad delivery) |
+| Meta Ads account | Name | Currency | Spend (lifetime) | Stores served |
+|---|---|---|---|---|
+| `act_1765937727381511` | URBAN-CAD-IST | CAD | $3,711.45 | `f51039.myshopify.com` (Urban Classics) — primary |
+| `act_1909845012991177` | Urban-CAD-IST | CAD | $1,156.14 | `f51039.myshopify.com` (Urban Classics) — secondary |
+| `act_769104785114570` | urban global | CAD | $142.26 | `f51039.myshopify.com` (Urban Classics) — older, Lake Elsinore |
+| `act_1072546905038329` | Storico-New-CAD-IST | CAD | $2,597.57 | `ys4n0u-ys.myshopify.com` (Storico) — primary |
+| `act_1134191618602887` | STORICO-IST-CAD | CAD | $1,675.03 | `ys4n0u-ys.myshopify.com` (Storico) — secondary |
+| `act_755235000581939` | Storico-New-CAD | CAD | $555.93 | `ys4n0u-ys.myshopify.com` (Storico) — Venice |
+| `act_3446595268850626` | Storico-CAD-IST | CAD | $122.09 | `ys4n0u-ys.myshopify.com` (Storico) — Olympia, status=disabled |
+| `act_639776792472184` | STORICO-IST-CAD | CAD | $0 | `ys4n0u-ys.myshopify.com` (Storico) — status=disabled |
+| `act_1506176744351423` | Storico-CAD-IST | CAD | $0 | `ys4n0u-ys.myshopify.com` (Storico) — Buffalo, unused |
+| `act_1231977889107681` | Clasicoo-IST-CAD | CAD | $53.81 | `52j1ga-hz.myshopify.com` (Classicoo) |
+| `act_1445770643706149` | Trendsetter-IST-CAD | CAD | $717.20 | `acmsuy-g0.myshopify.com` (Trendsetters) |
+| `act_654879327196107` | AyurPet – Ad Acc. 1 | INR | ₹730,138.31 | `1ygbmd-pr.myshopify.com` (India) + `2684sq-mt.myshopify.com` (Global) — **single account serves both**. ROAS must be reconciled across BOTH storefronts. |
+| `act_1214314967570733` | The AyurPet (Read-Only) | INR | ₹0 | `1ygbmd-pr` + `2684sq-mt` — reporting-only, not ad delivery |
+| `act_507013211846013` | MOKSHYA-CAD-EST | CAD | $2,179.61 | `5u7mdi-ap.myshopify.com` (Mokshya) — CAD delivery |
+| `act_30237311672580998` | Mokshya – INR – IST | INR | ₹1,843.84 | `5u7mdi-ap.myshopify.com` (Mokshya) — INR delivery |
+
+**Notes:**
+- Urban, Storico, and Mokshya each have **multiple ad accounts** across agencies/timezones. The Summary table lists the highest-spend primary; the Reverse view is the full map. Any ROAS reconciliation must sum spend across all accounts for a given store.
+- Ayurpet + Mokshya follow the same pattern (one brand, multiple currency-specific ad accounts). Agent reconciliation logic should group by `brand`, not `ad_account`, when computing true ROAS.
 
 **Legend:**
 - **Family** = merchant / brand group. Shared family often shares contact owner + similar commercial terms.
 - **Custom App** = the `auth.<app-name>.$.jsx` route + `<APPNAME>_CLIENT_ID` env var in the auth-hub repo (`multi-store-theme-manager`).
-- **Scope status:** ✅ = has write_orders (cod-confirm Shopify tag write-back works + ads agent receives order webhooks); ⚠ = missing, must be added in the Custom App's admin panel; ⏳ = pending install / onboarding.
+- **Scope status:** ✅ full 33 scopes = the unified 2026-04-16 baseline is granted and active. Webhooks registered, backfill complete.
 - `TBD` = field to fill once the store is onboarded.
 
 ---
@@ -177,50 +201,53 @@ All callback domains: **`https://shopify.glitchexecutor.com`** (must match exact
 - **Store handle:** `urban-classics-hd` (admin.shopify.com/store/urban-classics-hd)
 - **Custom App:** `urban`
 - **Install:** `https://shopify.glitchexecutor.com/auth/urban/install?shop=f51039.myshopify.com`
-- **Installed:** 2026-03 (baseline)
-- **Scopes granted:** `write_files, write_inventory, read_locales, write_online_store_navigation, write_orders, read_product_listings, write_products, write_content, write_themes, write_translations`
+- **Installed:** 2026-03 (baseline), re-installed 2026-04-16 with full 33-scope set.
+- **Scopes granted:** full unified 33-scope set.
 - **cod-confirm:** ✅ live, validated end-to-end on 2026-04-15 (Sarvam Bulbul v3 + Vobiz SIP)
-- **ads agent:** ✅ 5 webhooks registered 2026-04-16 (ORDERS_CREATE / PAID / FULFILLED / CANCELLED / REFUNDS_CREATE), cod-confirm webhook preserved, 82 orders backfilled to PostHog
-- **Meta Ads account:** `act_1765937727381511` — **URBAN-CAD-IST** (CAD, New York, status=3)
-  - Secondary / earlier: `act_1909845012991177` "Urban-CAD-IST" (CAD, Philadelphia), `act_769104785114570` "urban global" (CAD, Lake Elsinore)
+- **ads agent:** ✅ 5 webhooks registered (`ORDERS_CREATE`, `_PAID`, `_FULFILLED`, `_CANCELLED`, `REFUNDS_CREATE`), cod-confirm webhook preserved; 441 unique orders in PostHog (90-day window, 82 paid, CAD $446K paid revenue, 72% email coverage).
+- **Meta Ads accounts:**
+  - **Primary:** `act_1765937727381511` — URBAN-CAD-IST (CAD, $3,711.45 spent, New York, status=3 delimited)
+  - Secondary: `act_1909845012991177` — Urban-CAD-IST (CAD, $1,156.14 spent, Philadelphia, status=1 active)
+  - Legacy: `act_769104785114570` — urban global (CAD, $142.26 spent, Lake Elsinore, status=2)
 
 #### Storico — `ys4n0u-ys.myshopify.com`
 
-- **Store handle:** TBD (not yet installed)
+- **Store handle:** TBD
 - **Custom App:** `storico`
-- **Custom App credentials:** issued 2026-04-16, filed in `/home/support/multi-store-theme-manager/.env` as `STORICO_CLIENT_ID` + `STORICO_CLIENT_SECRET`
-- **OAuth callback (register in Shopify Custom App):** `https://shopify.glitchexecutor.com/auth/storico/callback`
-- **Install URL (send to merchant):** `https://shopify.glitchexecutor.com/auth/storico/install?shop=ys4n0u-ys.myshopify.com`
-- **Auth-hub route:** ✅ `app/routes/auth.storico.$.jsx` created 2026-04-16, `shopify-app.service` restarted, route returns 302 to Shopify OAuth (verified).
-- **Status:** ✅ already installed via OAuth before 2026-04-16 scope unification — offline session present in Prisma with a working `shpca_...` token and the baseline 9-scope set (no read_orders, no read_customers). Re-install via the URL above will upgrade to the full unified 15-scope baseline.
-- **Next steps:**
-  1. Merchant enables unified scopes in their Custom App admin UI.
-  2. Merchant clicks re-install URL → fresh `offline_*` session overwrites the old one, with full scopes.
-  3. `python ops/scripts/register_webhooks.py --store storico` from the ads-agent repo (registers the 5 order webhooks).
-  4. `python ops/scripts/backfill_posthog.py --store storico --days 90`.
-- **Meta Ads account:** TBD (family shares Meta account space with Urban / Classicoo; assignment depends on merchant's spend plan).
+- **Custom App credentials:** issued 2026-04-16, filed in `.env` as `STORICO_CLIENT_ID` + `STORICO_CLIENT_SECRET`.
+- **OAuth callback:** `https://shopify.glitchexecutor.com/auth/storico/callback`
+- **Install URL:** `https://shopify.glitchexecutor.com/auth/storico/install?shop=ys4n0u-ys.myshopify.com`
+- **Auth-hub route:** ✅ `app/routes/auth.storico.$.jsx` created 2026-04-16, verified live.
+- **Installed:** pre-2026-04-16 with baseline; re-installed 2026-04-16 with full 33-scope set.
+- **Scopes granted:** full unified 33-scope set.
+- **ads agent:** ✅ 5 webhooks registered; 311 unique orders in PostHog (90-day, 109 paid, $697K paid revenue, 52% email, 11% UTM coverage).
+- **Meta Ads accounts (multiple — reconcile ROAS across all):**
+  - **Primary:** `act_1072546905038329` — Storico-New-CAD-IST (CAD, $2,597.57 spent, Philadelphia)
+  - Secondary: `act_1134191618602887` — STORICO-IST-CAD (CAD, $1,675.03 spent, Clovis)
+  - Also live: `act_755235000581939` Storico-New-CAD ($555), `act_3446595268850626` Storico-CAD-IST ($122, disabled), `act_639776792472184` STORICO-IST-CAD ($0, disabled), `act_1506176744351423` Storico-CAD-IST ($0, unused)
 
 #### Classicoo — `52j1ga-hz.myshopify.com`
 
 - **Store handle:** TBD
 - **Custom App:** `classicoo`
-- **Status:** installed (session present in Prisma), but ⚠ **no write_orders scope** → order webhooks cannot be registered (`webhookSubscriptionCreate` returns "cannot create webhook subscription with the specified topic"), and ads agent cannot track orders from this store until scopes are bumped.
-- **Scope bump required:** add `read_orders, write_orders, read_customers, read_products, read_analytics, read_reports` to `CLASSICOO_SCOPES` in auth-hub `.env`, rebuild, force merchant re-consent.
-- **Meta Ads account:** `act_1231977889107681` — **Clasicoo-IST-CAD** (CAD, ownership to confirm)
+- **Install URL:** `https://shopify.glitchexecutor.com/auth/classicoo/install?shop=52j1ga-hz.myshopify.com`
+- **Installed:** pre-2026-04-16 with baseline; re-installed 2026-04-16 with full 33-scope set.
+- **Scopes granted:** full unified 33-scope set.
+- **ads agent:** ✅ 5 webhooks registered 2026-04-16; 22 unique orders in PostHog (all `PENDING`/`VOIDED` — 0 paid in last 90 days — likely COD-heavy or test-mode store).
+- **Meta Ads account:** `act_1231977889107681` — **Clasicoo-IST-CAD** (CAD, $53.81 spent, Anchorage, status=1 active)
 
 #### Trendsetters — `acmsuy-g0.myshopify.com`
 
-- **Store handle:** TBD (not yet installed)
+- **Store handle:** TBD
 - **Custom App:** `trendsetters`
-- **Custom App credentials:** issued 2026-04-16, filed in `/home/support/multi-store-theme-manager/.env` as `TRENDSETTERS_CLIENT_ID` + `TRENDSETTERS_CLIENT_SECRET`.
-- **OAuth callback (register in Shopify Custom App):** `https://shopify.glitchexecutor.com/auth/trendsetters/callback`
-- **Install URL (send to merchant):** `https://shopify.glitchexecutor.com/auth/trendsetters/install?shop=acmsuy-g0.myshopify.com`
-- **Auth-hub route:** ✅ `app/routes/auth.trendsetters.$.jsx` created 2026-04-16, `shopify-app.service` restarted, route returns 302 to Shopify OAuth (verified).
-- **Status:** ⏳ awaiting merchant to (1) configure unified scopes in their Custom App admin UI, (2) click the install URL.
-- **Next steps (once installed):**
-  1. `python ops/scripts/register_webhooks.py --store trendsetters` from the ads-agent repo.
-  2. `python ops/scripts/backfill_posthog.py --store trendsetters --days 90`.
-- **Meta Ads account:** TBD (Urban family — assignment depends on merchant's spend plan).
+- **Custom App credentials:** issued 2026-04-16, filed in `.env` as `TRENDSETTERS_CLIENT_ID` + `TRENDSETTERS_CLIENT_SECRET`.
+- **OAuth callback:** `https://shopify.glitchexecutor.com/auth/trendsetters/callback`
+- **Install URL:** `https://shopify.glitchexecutor.com/auth/trendsetters/install?shop=acmsuy-g0.myshopify.com`
+- **Auth-hub route:** ✅ `app/routes/auth.trendsetters.$.jsx` created 2026-04-16, verified live.
+- **Installed:** 2026-04-16 (fresh install with full 33-scope set).
+- **Scopes granted:** full unified 33-scope set.
+- **ads agent:** ✅ 5 webhooks registered 2026-04-16; 302 unique orders in PostHog (90-day, 65 paid, 251K paid revenue, 82% email coverage).
+- **Meta Ads account:** `act_1445770643706149` — **Trendsetter-IST-CAD** (CAD, $717.20 spent, Los Angeles, status=1 active)
 
 ---
 
@@ -234,11 +261,11 @@ Both storefronts share a single Meta Ads account (`act_654879327196107`). ROAS m
 - **Role:** India-market sales storefront. Traffic from India-targeted Meta ads lands here.
 - **Custom App:** `ayurpet-ind`
 - **Install URL:** `https://shopify.glitchexecutor.com/auth/ayurpet-ind/install?shop=1ygbmd-pr.myshopify.com`
-- **Installed:** 2026-04-15
-- **Scopes granted:** full baseline incl. `write_orders` (updated 2026-04-15).
+- **Installed:** 2026-04-15; re-installed 2026-04-16 with full 33-scope set.
+- **Scopes granted:** full unified 33-scope set.
 - **cod-confirm status:** not enrolled (user decision — NOT running voice-AI confirmation on Ayurpet for now).
-- **ads agent:** ✅ 5 webhooks registered 2026-04-16, 137 orders backfilled to PostHog.
-- **Meta Ads account:** `act_654879327196107` — **AyurPet – Ad Acc. 1** (INR, ₹7.3L lifetime spend). Also drives the Global storefront below.
+- **ads agent:** ✅ 5 webhooks registered; 172 unique orders in PostHog (90-day, 138 paid, ₹430K paid revenue, 31% email coverage).
+- **Meta Ads account:** `act_654879327196107` — **AyurPet – Ad Acc. 1** (INR, ₹730,138.31 lifetime spent). Also drives the Global storefront below.
   - Reporting-only alternate: `act_1214314967570733` "The AyurPet (Read-Only)" (INR, 0 spend) — not used for delivery.
 
 #### Ayurpet (Global storefront) — `2684sq-mt.myshopify.com`
@@ -247,11 +274,11 @@ Both storefronts share a single Meta Ads account (`act_654879327196107`). ROAS m
 - **Role:** Global-market sales storefront (ex-India). Traffic from geo-targeted Meta ads for Global audiences lands here.
 - **Custom App:** `ayurpet`
 - **Install URL:** `https://shopify.glitchexecutor.com/auth/ayurpet/install?shop=2684sq-mt.myshopify.com`
-- **Installed:** 2026-04-15
-- **Scopes granted:** full baseline incl. `write_orders` (updated 2026-04-15).
+- **Installed:** 2026-04-15; re-installed 2026-04-16 with full 33-scope set.
+- **Scopes granted:** full unified 33-scope set.
 - **cod-confirm status:** not enrolled (global markets typically not COD-heavy; revisit if Global storefront starts offering COD in markets like UAE, Bangladesh, etc.).
-- **ads agent:** ✅ 5 webhooks registered 2026-04-16, 119 orders backfilled to PostHog.
-- **Meta Ads account:** `act_654879327196107` — **AyurPet – Ad Acc. 1** (shared with India storefront). Ad account is configured in INR even though it drives Global sales — **flag this for the ad-account diagnostic**.
+- **ads agent:** ✅ 5 webhooks registered; 122 unique orders in PostHog (90-day, 119 paid, 17K paid revenue, 33% email, **50% UTM coverage** — best across all 7 stores).
+- **Meta Ads account:** `act_654879327196107` — **AyurPet – Ad Acc. 1** (shared with India storefront). Ad account is configured in INR even though it drives Global sales — **flag for ad-account diagnostic**: revenue from this storefront is multi-currency (USD for most Global orders) but spend attribution flows through an INR ad account. Reconciliation must convert currencies before computing true ROAS.
 
 ---
 
@@ -260,18 +287,17 @@ Both storefronts share a single Meta Ads account (`act_654879327196107`). ROAS m
 #### Mokshya — `5u7mdi-ap.myshopify.com`
 
 - **Store handle:** TBD
-- **Custom App:** `mokshya` — **shares credentials** with the auth-hub default app (`SHOPIFY_API_KEY` = `75d0ca694c091038f5977bff53a8c326`, `SHOPIFY_API_SECRET` = `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`). For symmetry with the other slugs, `MOKSHYA_CLIENT_ID` and `MOKSHYA_CLIENT_SECRET` env vars alias those values in `/home/support/multi-store-theme-manager/.env`.
-- **OAuth callback (register in Shopify Custom App):** `https://shopify.glitchexecutor.com/auth/mokshya/callback`
-- **Install URL (send to merchant):** `https://shopify.glitchexecutor.com/auth/mokshya/install?shop=5u7mdi-ap.myshopify.com`
-- **Auth-hub route:** ✅ `app/routes/auth.mokshya.$.jsx` created 2026-04-16, `shopify-app.service` restarted, route returns 302 to Shopify OAuth (verified).
-- **Status:** ⚠ existing `offline_5u7mdi-ap.myshopify.com` session has a token that Shopify rejects with 401 (`Invalid API key or access token`). Root cause unclear — likely revoked when Custom App config was edited in merchant admin at some point. Merchant needs to re-install once unified scopes are enabled.
-- **Next steps:**
-  1. Merchant enables the unified scope set in their Custom App admin UI.
-  2. Merchant clicks the install URL; fresh `offline_*` session lands in Prisma with working token.
-  3. `python ops/scripts/register_webhooks.py --store mokshya` from the ads-agent repo.
-  4. `python ops/scripts/backfill_posthog.py --store mokshya --days 90`.
+- **Custom App:** `mokshya` — **shares credentials** with the auth-hub default app (`SHOPIFY_API_KEY` / `SHOPIFY_API_SECRET`). For symmetry with the other slugs, `MOKSHYA_CLIENT_ID` and `MOKSHYA_CLIENT_SECRET` env vars alias those values in the auth-hub `.env`.
+- **OAuth callback:** `https://shopify.glitchexecutor.com/auth/mokshya/callback`
+- **Install URL:** `https://shopify.glitchexecutor.com/auth/mokshya/install?shop=5u7mdi-ap.myshopify.com`
+- **Auth-hub route:** ✅ `app/routes/auth.mokshya.$.jsx` created 2026-04-16, verified live.
+- **Installed:** re-installed 2026-04-16 with full 33-scope set (previous token was revoked).
+- **Scopes granted:** full unified 33-scope set.
+- **ads agent:** ✅ 5 webhooks registered; 1 unique order in PostHog (90-day window — low-volume store).
 - **Brand context:** Western-seeker targeting, spiritual/Hinduism-adjacent (not Indian diaspora — see `project_mokshya_positioning` memory).
-- **Meta Ads account:** TBD (standalone — not shared with Urban or Ayurpet families).
+- **Meta Ads accounts (multiple — reconcile across currencies like Ayurpet):**
+  - **CAD delivery:** `act_507013211846013` — MOKSHYA-CAD-EST (CAD, $2,179.61 spent, status=3)
+  - **INR delivery:** `act_30237311672580998` — Mokshya – INR – IST (INR, ₹1,843.84 spent, Delhi, status=3)
 
 ---
 
@@ -304,4 +330,6 @@ All six services share the same Postgres at `127.0.0.1:5432/shopify_app` (table 
 - **2026-04-16 (restructure)** — introduced **client family** grouping: Urban family (Urban Classics, Storico, Classicoo, Trendsetters), Ayurpet family (India + Global), Mokshya standalone. Added **Storico** (`ys4n0u-ys.myshopify.com`, Custom App `storico`, creds issued 2026-04-16). Added **Trendsetters** and **Mokshya** as onboarding placeholders. Removed `5u7mdi-ap.myshopify.com` (dead session, not a real storefront). Total active client storefronts: 7 — 4 installed, 1 credentials-issued, 2 not yet onboarded.
 - **2026-04-16 (scope unification)** — all `*_SCOPES` env vars in auth hub bumped to unified 15-scope analytics-ready baseline (read_orders, write_orders, read_customers, read_products, write_products, read_product_listings, read_analytics, read_reports, write_content, write_files, write_themes, write_translations, write_inventory, read_locales, write_online_store_navigation). Added **Trendsetters** creds (`acmsuy-g0.myshopify.com`, Custom App `trendsetters`). Created `auth.storico.$.jsx` and `auth.trendsetters.$.jsx` routes. Rebuilt + restarted `shopify-app.service`, both new routes verified live. All 4 already-installed stores (Urban Classics, Classicoo, Ayurpet India, Ayurpet Global) need merchant re-install after they enable the new scopes in their Custom App admin UI — install URLs listed at the top of this doc. Also updated ads-agent `.env` `SHOPIFY_WEBHOOK_SECRETS` to include storico + trendsetters HMAC secrets, and ads-agent `src/ads_agent/config.py` to register all 6 stores.
 - **2026-04-16 (Mokshya correction)** — corrected `5u7mdi-ap.myshopify.com` identity: it is **Mokshya**, not a dead Classicoo secondary. Uses the auth-hub default app credentials (`SHOPIFY_API_KEY/SECRET`). Created `auth.mokshya.$.jsx` route + `MOKSHYA_*` env var aliases. Rebuilt + restarted auth hub, install URL verified. Store count reaches **7 client storefronts confirmed**. Existing token 401s (likely revoked when Custom App was last edited) — merchant re-install required via `https://shopify.glitchexecutor.com/auth/mokshya/install?shop=5u7mdi-ap.myshopify.com`.
-- **2026-04-16 (maximal scope set — final)** — replaced the 15-scope unified baseline with a **41-scope maximal set** covering all foreseeable ads-ops / analytics / content-tooling / HITL-write use cases. Initially tried 44 but Shopify's Custom App UI rejected `read_all_orders` (gated — Partner Dashboard approval), `read_product_listings` (sales-channel legacy REST scope), and `read_purchase_options` (Subscription-API gated). Dropped those three; remaining 41 all validated via live install URL. Key additions vs. previous 15-scope baseline: `read_returns`, `read_fulfillments`, `read_customer_events`, `read_draft_orders` / `write_draft_orders`, `read_order_edits`, `read_marketing_events` / `write_marketing_events`, `read_discounts` / `write_discounts`, `read_price_rules` / `write_price_rules`, `read_markets`, `read_metaobjects` / `read_metaobject_definitions`, `read_shipping`, `read_shopify_payments_payouts` / `_disputes`, `read_privacy_settings`, `read_online_store_pages`, `write_customers`, `write_pixels`. Updated all 8 `*_SCOPES` vars (including top-level `SCOPES`). Rebuilt + restarted auth hub, verified 41-scope OAuth URL for `urban`. This is intended to be the LAST scope change we ask merchants to approve — future agent features will use the already-granted scope set.
+- **2026-04-16 (maximal scope set — final)** — replaced the 15-scope unified baseline with a **33-scope maximal set** covering all foreseeable ads-ops / analytics / content-tooling / HITL-write use cases. Iteratively trimmed from 44 → 41 → 33 as Shopify Custom App UI rejected newer scope names. Key additions vs. previous 15-scope baseline: `read_returns`, `read_fulfillments`, `read_customer_events`, `read_draft_orders` / `write_draft_orders`, `read_marketing_events` / `write_marketing_events`, `read_discounts` / `write_discounts`, `read_price_rules` / `write_price_rules`, `read_locations`, `read_shipping`, `write_customers`, `write_pixels`. Updated all 8 `*_SCOPES` vars. All 7 merchants enabled scopes in their Custom App admin UIs and re-installed. All 7 storefronts now running full 33-scope set. This is the LAST scope change — future agent features use the already-granted set.
+- **2026-04-16 (post-enablement verification)** — ran live `read_customers` + `customerJourneySummary` queries across all 7 storefronts: all returned customer emails and UTM attribution (where populated). 35 Shopify webhooks total (5 topics × 7 stores) firing to `insights.glitchexecutor.com`. Backfilled 1,371 order events into PostHog (all lifecycle states, not just paid) with order-native `createdAt` as event timestamp, customer IDs for person-stitching, UTM params flattened as `utm_source/medium/campaign/content/term`, and line-item JSON.
+- **2026-04-16 (doc rename + Meta account refresh)** — renamed `STORES.md` → `SHOPIFY_STORES_INFRA.md` (canonical doc across all Shopify-adjacent workflows — cod-confirm, ads agent, meta-ads-mcp, future services). Live Meta ad-account snapshot pulled via `meta-ads-mcp get_ad_accounts`, Summary + Reverse-view tables updated: Trendsetters → `act_1445770643706149`; Storico → `act_1072546905038329` primary (+ 5 secondary accounts); Mokshya → `act_507013211846013` CAD + `act_30237311672580998` INR (dual-currency like Ayurpet). All account spend figures refreshed.

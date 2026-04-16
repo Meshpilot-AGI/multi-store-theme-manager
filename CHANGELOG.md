@@ -13,7 +13,9 @@ Body text (if present) shown as indented sub-bullets.
 
 ## 2026-04-16
 
-- **08:15 UTC** — auto-sync: 2026-04-16 08:15 UTC (`66abf8e`) — 1 file
+- **08:45 UTC** — auto-sync: 2026-04-16 08:45 UTC (`d86cf46`) — 1 file
+        R058	STORES.md	SHOPIFY_STORES_INFRA.md
+- **08:15 UTC** — auto-sync: 2026-04-16 08:15 UTC (`fa2fd76`) — 2 files
         M	STORES.md
 - **07:45 UTC** — auto-sync: 2026-04-16 07:45 UTC (`b4c04f2`) — 3 files
         M	STORES.md
