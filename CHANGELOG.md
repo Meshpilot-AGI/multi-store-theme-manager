@@ -11,9 +11,21 @@ Body text (if present) shown as indented sub-bullets.
 
 ---
 
+## 2026-04-19
+
+- **00:30 UTC** — auto-sync: 2026-04-19 00:30 UTC (`99055f4`) — 1 file
+        M	SHOPIFY_STORES_INFRA.md
+
+## 2026-04-17
+
+- **02:26 UTC** — chore: add gitleaks pre-commit hook (`63ee30a`) — 1 file
+    Blocks commits containing API keys, tokens, or other secrets.
+    Install locally: pre-commit install
+    Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+
 ## 2026-04-16
 
-- **19:30 UTC** — auto-sync: 2026-04-16 19:30 UTC (`5d2f156`) — 1 file
+- **19:30 UTC** — auto-sync: 2026-04-16 19:30 UTC (`e81b7e6`) — 2 files
         M	SHOPIFY_STORES_INFRA.md
 - **08:45 UTC** — auto-sync: 2026-04-16 08:45 UTC (`e952a5c`) — 2 files
         R058	STORES.md	SHOPIFY_STORES_INFRA.md

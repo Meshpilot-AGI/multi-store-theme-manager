@@ -166,15 +166,18 @@ Useful when reconciling ROAS across multiple storefronts that feed from one ad-s
 
 All install URLs live in **`/home/support/multi-store-theme-manager/app/routes/auth.<app>.$.jsx`**. The served host is **`https://shopify.glitchexecutor.com`** (nginx → port 3101 → this repo). Each Shopify Custom App's Allowed Redirect URIs must include the callback listed below.
 
-| App name | Install URL (give to merchant once) | OAuth callback (register in Shopify Custom App config) | Env-var prefix |
-|---|---|---|---|
-| `urban` | `/auth/urban/install?shop=<shop>.myshopify.com` | `/auth/urban/callback` | `URBAN_*` |
-| `storico` | `/auth/storico/install?shop=<shop>.myshopify.com` | `/auth/storico/callback` | `STORICO_*` |
-| `classicoo` | `/auth/classicoo/install?shop=<shop>.myshopify.com` | `/auth/classicoo/callback` | `CLASSICOO_*` |
-| `trendsetters` | `/auth/trendsetters/install?shop=<shop>.myshopify.com` | `/auth/trendsetters/callback` | `TRENDSETTERS_*` |
-| `ayurpet-ind` | `/auth/ayurpet-ind/install?shop=<shop>.myshopify.com` | `/auth/ayurpet-ind/callback` | `AYURPET_IND_*` |
-| `ayurpet` | `/auth/ayurpet/install?shop=<shop>.myshopify.com` | `/auth/ayurpet/callback` | `AYURPET_*` |
-| `mokshya` | `/auth/mokshya/install?shop=<shop>.myshopify.com` | `/auth/mokshya/callback` | `MOKSHYA_*` (alias of `SHOPIFY_API_KEY`/`SECRET`) |
+| Dev Dashboard app name | Auth-hub slug | myshopify domain | Install URL | OAuth callback | Env-var prefix |
+|---|---|---|---|---|---|
+| `Glitch Grow X Urban` (`glitch-grow-x-urban-9`) | `urban` | `f51039.myshopify.com` | `/auth/urban/install?shop=f51039.myshopify.com` | `/auth/urban/callback` | `URBAN_*` |
+| `Glitch Grow X Storico` (`glitch-grow-x-storico-6`) | `storico` | `ys4n0u-ys.myshopify.com` | `/auth/storico/install?shop=ys4n0u-ys.myshopify.com` | `/auth/storico/callback` | `STORICO_*` |
+| `Glitch Grow X Classicoo` (`glitch-grow-x-classicoo-5`) | `classicoo` | `52j1ga-hz.myshopify.com` | `/auth/classicoo/install?shop=52j1ga-hz.myshopify.com` | `/auth/classicoo/callback` | `CLASSICOO_*` |
+| `Glitch Grow X Trendsetter` (`glitch-grow-x-trendsetter-5`) | `trendsetters` | `acmsuy-g0.myshopify.com` | `/auth/trendsetters/install?shop=acmsuy-g0.myshopify.com` | `/auth/trendsetters/callback` | `TRENDSETTERS_*` |
+| `Glitch Grow X Ayurpet IND` (`glitch-grow-x-ayurpet-ind-5`) | `ayurpet-ind` | `1ygbmd-pr.myshopify.com` | `/auth/ayurpet-ind/install?shop=1ygbmd-pr.myshopify.com` | `/auth/ayurpet-ind/callback` | `AYURPET_IND_*` |
+| `Glitch grow X ayurpet` (`glitch-grow-x-ayurpet-5`) | `ayurpet` | `2684sq-mt.myshopify.com` | `/auth/ayurpet/install?shop=2684sq-mt.myshopify.com` | `/auth/ayurpet/callback` | `AYURPET_*` |
+| `Glitch Grow X Mokshya` (`glitch-grow-x-mokshya-10`) | `mokshya` | `5u7mdi-ap.myshopify.com` | `/auth/mokshya/install?shop=5u7mdi-ap.myshopify.com` | `/auth/mokshya/callback` | `MOKSHYA_*` (alias of `SHOPIFY_API_KEY`/`SECRET`) |
+| `Glitch Grow X Namhya` (`glitch-grow-x-namhya-2`) | `namhya` | *(0 installs — not yet active)* | `/auth/namhya/install?shop=<shop>.myshopify.com` | `/auth/namhya/callback` | `NAMHYA_*` |
+
+**Architecture note:** every store has its **own** app in Shopify Dev Dashboard (`https://dev.shopify.com/dashboard/<Glitch Executor org>/apps`), each with a distinct Client ID + Client Secret. There is **no** shared-app-across-stores model. Any service that verifies Shopify webhooks (cod-confirm, auth-hub, ads-agent) must therefore use a **per-shop secret map**, never a single `SHOPIFY_WEBHOOK_SECRET`. The glitch-grow-ads-agent pattern is `SHOPIFY_WEBHOOK_SECRETS` as a JSON map `{ app_slug: secret }` — new services should match that.
 
 All callback domains: **`https://shopify.glitchexecutor.com`** (must match exactly in Shopify's Allowed Redirection URLs).
 
