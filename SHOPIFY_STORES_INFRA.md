@@ -113,16 +113,27 @@ read_orders,write_orders,read_draft_orders,write_draft_orders,read_products,writ
 
 Source: live Meta ad-accounts snapshot via `meta-ads-mcp get_ad_accounts`, 2026-04-16.
 
-| Family | Client / brand | Store handle | myshopify domain | Custom App | Scope status | Primary Meta Ads account |
-|---|---|---|---|---|---|---|
-| Urban | Urban Classics | urban-classics-hd | `f51039.myshopify.com` | `urban` | ✅ full 33 scopes | `act_1909845012991177` Urban-CAD-IST (CAD, $1.2K spent) — ACTIVE; other 2 accounts retired |
-| Urban | **Storico** | TBD | `ys4n0u-ys.myshopify.com` | `storico` | ✅ full 33 scopes | `act_755235000581939` Storico-New-CAD (CAD, $555 lifetime) — ACTIVE; other 5 accounts retired |
-| Urban | Classicoo | TBD | `52j1ga-hz.myshopify.com` | `classicoo` | ✅ full 33 scopes | `act_1231977889107681` Clasicoo-IST-CAD (CAD, $54 spent) |
-| Urban | **Trendsetters** | TBD | `acmsuy-g0.myshopify.com` | `trendsetters` | ✅ full 33 scopes | `act_1445770643706149` Trendsetter-IST-CAD (CAD, $717 spent) |
-| Ayurpet | Ayurpet (India) | ayurpet | `1ygbmd-pr.myshopify.com` | `ayurpet-ind` | ✅ full 33 scopes | `act_654879327196107` AyurPet – Ad Acc. 1 (INR, ₹7.3L spent) |
-| Ayurpet | Ayurpet (Global) | 2684sq-mt | `2684sq-mt.myshopify.com` | `ayurpet` | ✅ full 33 scopes | `act_654879327196107` AyurPet – Ad Acc. 1 (shared with India) |
-| Mokshya | **Mokshya** | TBD | `5u7mdi-ap.myshopify.com` | `mokshya` (alias of default app) | ✅ full 33 scopes | `act_507013211846013` MOKSHYA-CAD-EST (CAD, $2.2K) — **main active**; `act_30237311672580998` Mokshya-INR-IST (INR, ₹1.8K) — secondary, dormant |
-| Internal | Glitch SEO (test) | glitch-seo-test-1 | `glitch-seo-test-1.myshopify.com` | public app (Glitch SEO) | n/a | n/a |
+| Family | Client / brand | Store handle | myshopify domain | Custom App | Scope status | Checkout provider | Primary Meta Ads account |
+|---|---|---|---|---|---|---|---|
+| Urban | Urban Classics | urban-classics-hd | `f51039.myshopify.com` | `urban` | ✅ full 33 scopes | **Flexype** | `act_1909845012991177` Urban-CAD-IST (CAD, $1.2K spent) — ACTIVE; other 2 accounts retired |
+| Urban | **Storico** | TBD | `ys4n0u-ys.myshopify.com` | `storico` | ✅ full 33 scopes | **Shiprocket Fastrr** | `act_755235000581939` Storico-New-CAD (CAD, $555 lifetime) — ACTIVE; other 5 accounts retired |
+| Urban | Classicoo | TBD | `52j1ga-hz.myshopify.com` | `classicoo` | ✅ full 33 scopes | **Shiprocket Fastrr** | `act_1231977889107681` Clasicoo-IST-CAD (CAD, $54 spent) |
+| Urban | **Trendsetters** | TBD | `acmsuy-g0.myshopify.com` | `trendsetters` | ✅ full 33 scopes | **Flexype** | `act_1445770643706149` Trendsetter-IST-CAD (CAD, $717 spent) |
+| Ayurpet | Ayurpet (India) | ayurpet | `1ygbmd-pr.myshopify.com` | `ayurpet-ind` | ✅ full 33 scopes | TBD | `act_654879327196107` AyurPet – Ad Acc. 1 (INR, ₹7.3L spent) |
+| Ayurpet | Ayurpet (Global) | 2684sq-mt | `2684sq-mt.myshopify.com` | `ayurpet` | ✅ full 33 scopes | TBD | `act_654879327196107` AyurPet – Ad Acc. 1 (shared with India) |
+| Mokshya | **Mokshya** | TBD | `5u7mdi-ap.myshopify.com` | `mokshya` (alias of default app) | ✅ full 33 scopes | TBD | `act_507013211846013` MOKSHYA-CAD-EST (CAD, $2.2K) — **main active**; `act_30237311672580998` Mokshya-INR-IST (INR, ₹1.8K) — secondary, dormant |
+| Internal | Glitch SEO (test) | glitch-seo-test-1 | `glitch-seo-test-1.myshopify.com` | public app (Glitch SEO) | n/a | n/a | n/a |
+
+### Checkout providers — Urban family
+
+All 4 Urban-family stores are India-based (INR shop currency, Basic plan) and use a **third-party checkout** layered over Shopify's native checkout. There is a clear performance split between the two providers in use:
+
+| Provider | Stores | 2026-04-26 ATC → Purchase | 2026-04-26 ROAS (Meta-attributed) |
+|---|---|---:|---:|
+| **Shiprocket Fastrr** | Storico, Classicoo | 41–49% | 16.4x – 16.5x |
+| **Flexype** | Urban Classics, Trendsetters | 15–26% | 4.3x – 4.9x |
+
+Creative + landing pages are similar across all 4 stores → the checkout provider is the dominant variable behind the ~3–4× ROAS gap. Flexype stores leak primarily at **ATC → Initiate Checkout** (Trendsetters: 48% advance vs 80%+ on Fastrr stores) and at **IC → Purchase** (Urban Classics: 35% close vs 52–59%). Action items live in the private playbook (`glitch-grow-ads-agent-private/.../playbooks/urban.md`).
 
 **Total active client storefronts: 7** — all 7 installed, all 7 fully scoped as of 2026-04-16. 35 Shopify webhooks live (5 topics × 7 stores → `https://insights.glitchexecutor.com/shopify/webhook/<shop>`).
 
@@ -208,6 +219,7 @@ All callback domains: **`https://shopify.glitchexecutor.com`** (must match exact
 - **Install:** `https://shopify.glitchexecutor.com/auth/urban/install?shop=f51039.myshopify.com`
 - **Installed:** 2026-03 (baseline), re-installed 2026-04-16 with full 33-scope set.
 - **Scopes granted:** full unified 33-scope set.
+- **Checkout provider:** **Flexype** (third-party checkout overlaying native Shopify). Underperforms Fastrr peers — see Urban-family checkout providers section.
 - **cod-confirm:** ✅ live, validated end-to-end on 2026-04-15 (Sarvam Bulbul v3 + Vobiz SIP)
 - **ads agent:** ✅ 5 webhooks registered (`ORDERS_CREATE`, `_PAID`, `_FULFILLED`, `_CANCELLED`, `REFUNDS_CREATE`), cod-confirm webhook preserved; 441 unique orders in PostHog (90-day window, 82 paid, CAD $446K paid revenue, 72% email coverage).
 - **Meta Ads accounts:**
@@ -227,6 +239,7 @@ All callback domains: **`https://shopify.glitchexecutor.com`** (must match exact
 - **Auth-hub route:** ✅ `app/routes/auth.storico.$.jsx` created 2026-04-16, verified live.
 - **Installed:** pre-2026-04-16 with baseline; re-installed 2026-04-16 with full 33-scope set.
 - **Scopes granted:** full unified 33-scope set.
+- **Checkout provider:** **Shiprocket Fastrr**. Strong ATC→Purchase (~41% on 2026-04-26).
 - **ads agent:** ✅ 5 webhooks registered; 311 unique orders in PostHog (90-day, 109 paid, $697K paid revenue, 52% email, 11% UTM coverage).
 - **Meta Ads accounts:**
   - **ACTIVE (only one summed by agent):** `act_755235000581939` — Storico-New-CAD (CAD, $555.93 lifetime, Venice, status=1)
@@ -245,6 +258,7 @@ All callback domains: **`https://shopify.glitchexecutor.com`** (must match exact
 - **Install URL:** `https://shopify.glitchexecutor.com/auth/classicoo/install?shop=52j1ga-hz.myshopify.com`
 - **Installed:** pre-2026-04-16 with baseline; re-installed 2026-04-16 with full 33-scope set.
 - **Scopes granted:** full unified 33-scope set.
+- **Checkout provider:** **Shiprocket Fastrr**. Strong ATC→Purchase (~49% on 2026-04-26).
 - **ads agent:** ✅ 5 webhooks registered 2026-04-16; 22 unique orders in PostHog (all `PENDING`/`VOIDED` — 0 paid in last 90 days — likely COD-heavy or test-mode store).
 - **Meta Ads account:** `act_1231977889107681` — **Clasicoo-IST-CAD** (CAD, $53.81 spent, Anchorage, status=1 active)
 
@@ -258,6 +272,7 @@ All callback domains: **`https://shopify.glitchexecutor.com`** (must match exact
 - **Auth-hub route:** ✅ `app/routes/auth.trendsetters.$.jsx` created 2026-04-16, verified live.
 - **Installed:** 2026-04-16 (fresh install with full 33-scope set).
 - **Scopes granted:** full unified 33-scope set.
+- **Checkout provider:** **Flexype** (third-party checkout overlaying native Shopify). Worst ATC→IC funnel of the 4 Urban-family stores (~48% on 2026-04-26).
 - **ads agent:** ✅ 5 webhooks registered 2026-04-16; 302 unique orders in PostHog (90-day, 65 paid, 251K paid revenue, 82% email coverage).
 - **Meta Ads account:** `act_1445770643706149` — **Trendsetter-IST-CAD** (CAD, $717.20 spent, Los Angeles, status=1 active)
 
@@ -349,3 +364,5 @@ All six services share the same Postgres at `127.0.0.1:5432/shopify_app` (table 
 - **2026-04-16 (Urban single-account correction)** — user clarified only `act_1909845012991177` is the active Urban ad account; `act_1765937727381511` and `act_769104785114570` are retired. Updated `STORE_AD_ACCOUNTS_JSON` in ads-agent `.env` to include only the active account. Validated: `/roas urban 7` now sums exactly one account (Meta spend 591 CAD, purchases 356, true ROAS 70.44x vs Meta-reported 18.51x — same figures that were already surfacing, confirming the retired accounts had zero recent spend).
 - **2026-04-16 (Storico single-account correction)** — user clarified only `act_755235000581939` (Storico-New-CAD, Venice, $555.93 lifetime) is the active Storico account. Other 5 Storico-named accounts (including the highest-lifetime-spend `act_1072546905038329` at $2.6K) are retired. Updated `STORE_AD_ACCOUNTS_JSON` and validated: `/roas storico 7` now sums exactly one account (Meta spend 373 CAD, purchases 252, true ROAS 36.35x vs Meta-reported 20.06x).
 - **2026-04-16 (Mokshya dual-currency kept, CAD main)** — user clarified both Mokshya accounts are legitimate brand accounts (`act_507013211846013` CAD as MAIN + `act_30237311672580998` INR as secondary). Both currently dormant (0 spend last 30d). Both remain in `STORE_AD_ACCOUNTS_JSON` so any future spend is automatically summed without requiring a config change. CAD designated as primary when Mokshya resumes active advertising.
+
+- **2026-04-27 (Urban-family checkout providers documented)** — added a "Checkout provider" column to the Summary table and dedicated "Checkout providers — Urban family" subsection. **Storico + Classicoo run Shiprocket Fastrr; Urban Classics + Trendsetters run Flexype.** Funnel analysis on 2026-04-26 Meta data shows Fastrr stores convert ATC→Purchase at 41–49% (ROAS ~16x) vs Flexype stores at 15–26% (ROAS ~4–5x), with creative + LP held similar across all 4 stores. Per-store detail blocks updated. Action items live in `glitch-grow-ads-agent-private/.../playbooks/urban.md`. Ayurpet + Mokshya checkout providers TBD — fill in next time the user mentions them.
