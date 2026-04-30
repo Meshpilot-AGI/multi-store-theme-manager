@@ -124,6 +124,33 @@ Source: live Meta ad-accounts snapshot via `meta-ads-mcp get_ad_accounts`, 2026-
 | Mokshya | **Mokshya** | TBD | `5u7mdi-ap.myshopify.com` | `mokshya` (alias of default app) | ✅ full 33 scopes | TBD | `act_507013211846013` MOKSHYA-CAD-EST (CAD, $2.2K) — **main active**; `act_30237311672580998` Mokshya-INR-IST (INR, ₹1.8K) — secondary, dormant |
 | Internal | Glitch SEO (test) | glitch-seo-test-1 | `glitch-seo-test-1.myshopify.com` | public app (Glitch SEO) | n/a | n/a | n/a |
 
+### Daily ad budgets — Urban family
+
+Per-store Meta daily budgets (CAD on the active ad account; INR shop currency on the storefront side):
+
+| Store | Daily budget | Notes |
+|---|---:|---|
+| Urban Classics | **$50/day** | |
+| Storico | **$50/day** | |
+| Trendsetters | **$50/day** | |
+| Classicoo | **$30/day** | Started April 2026 — lower budget while ramping |
+
+Business model across all 4 stores: **sunglasses, one ad per SKU, one landing page per ad**. So an ad-level alert maps directly to a SKU-level kill/keep decision.
+
+### Underperformer watch — Discord automation
+
+Auto-posts an alert to **`#urban-family-alert`** (`channel_id=1499205675950014617`) when any active ad on the 4 Urban-family Meta accounts crosses the underperformer threshold:
+
+- **Trigger (per ad, last 90 days as lifetime proxy):** spend ≥ $20 (account currency) AND `omni_purchase` < 4
+- **Action:** Discord message — *"keep a watch or kill it"*. **Alert-only — no auto-pause.** HITL norms in the playbook gate pause actions.
+- **Cadence:** every 30 min (cron on the agent host)
+- **Dedup:** once per ad per UTC day (state at `~/.local/state/glitch-ads-bot/urban_underperformer_alerted.json`)
+- **Code:** `glitch-grow-ads-agent/src/ads_agent/actions/underperformer_watch.py`
+- **Wrapper:** `glitch-grow-ads-agent/scripts/urban_watch.sh`
+- **Cron:** `*/30 * * * * /home/support/glitch-grow-ads-agent/scripts/urban_watch.sh >> /home/support/.local/state/glitch-ads-bot/logs/urban-watch.log 2>&1`
+
+Threshold reasoning: $3 target CPA × 4 sales = $12 break-even at the bar; setting the spend gate at $20 gives the ad genuine room to convert before flagging, and "<4 purchases" is consistent with the user's "if order is less than 4 then kill it" rule.
+
 ### Checkout providers — Urban family
 
 All 4 Urban-family stores are India-based (INR shop currency, Basic plan) and use a **third-party checkout** layered over Shopify's native checkout. There is a clear performance split between the two providers in use:
@@ -366,3 +393,5 @@ All six services share the same Postgres at `127.0.0.1:5432/shopify_app` (table 
 - **2026-04-16 (Mokshya dual-currency kept, CAD main)** — user clarified both Mokshya accounts are legitimate brand accounts (`act_507013211846013` CAD as MAIN + `act_30237311672580998` INR as secondary). Both currently dormant (0 spend last 30d). Both remain in `STORE_AD_ACCOUNTS_JSON` so any future spend is automatically summed without requiring a config change. CAD designated as primary when Mokshya resumes active advertising.
 
 - **2026-04-27 (Urban-family checkout providers documented)** — added a "Checkout provider" column to the Summary table and dedicated "Checkout providers — Urban family" subsection. **Storico + Classicoo run Shiprocket Fastrr; Urban Classics + Trendsetters run Flexype.** Funnel analysis on 2026-04-26 Meta data shows Fastrr stores convert ATC→Purchase at 41–49% (ROAS ~16x) vs Flexype stores at 15–26% (ROAS ~4–5x), with creative + LP held similar across all 4 stores. Per-store detail blocks updated. Action items live in `glitch-grow-ads-agent-private/.../playbooks/urban.md`. Ayurpet + Mokshya checkout providers TBD — fill in next time the user mentions them.
+
+- **2026-04-30 (Urban underperformer-watch automation)** — added scheduled Discord alert for the 4 Urban-family Meta ad accounts: any active ad with lifetime spend ≥ $20 and `omni_purchase` < 4 posts to `#urban-family-alert` (channel `1499205675950014617`), every 30 min, dedup once per ad per UTC day. Alert-only — no auto-pause (HITL gate per playbook). Doc updated with daily-budget table (Urban Classics / Storico / Trendsetters $50/day, Classicoo $30/day) and SKU-per-ad business-model note. Code: `glitch-grow-ads-agent/src/ads_agent/actions/underperformer_watch.py`. Verified end-to-end on the live data — first alert (Trendsetters Prada-Black, CAD 24.64 spend / 2 purchases / $12.32 CPA) posted successfully and dedup confirmed on the second cycle.
