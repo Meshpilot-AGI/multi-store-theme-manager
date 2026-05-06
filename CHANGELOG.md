@@ -11,9 +11,35 @@ Body text (if present) shown as indented sub-bullets.
 
 ---
 
+## 2026-05-16
+
+- **02:48 UTC** — auto-sync: 2026-05-06 04:00 UTC (`ba616d9`) — 2 files
+        M	.gitignore
+        M	CHANGELOG.md
+
+## 2026-04-30
+
+- **00:33 UTC** — docs(infra): document Urban-family budgets + underperformer Discord watch (`bfd99b1`) — 1 file
+    Adds daily ad-budget table (Urban Classics/Storico/Trendsetters $50/day,
+    Classicoo $30/day) and the new automation: scheduled Discord alert to
+    #urban-family-alert when any active ad crosses spend>=$20 with <4
+    purchases. Alert-only, no auto-pause (HITL-gated per playbook).
+    Code lives in glitch-grow-ads-agent (separate repo); cron entry on the
+    agent host runs every 30 min.
+    Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+
+## 2026-04-27
+
+- **06:52 UTC** — docs(infra): record Urban-family checkout providers (Fastrr vs Flexype) (`d9cbe23`) — 1 file
+    Storico + Classicoo run Shiprocket Fastrr; Urban Classics + Trendsetters
+    run Flexype. 2026-04-26 funnel data shows Fastrr stores convert
+    ATC→Purchase 41–49% (ROAS ~16x) vs Flexype 15–26% (ROAS ~4–5x), with
+    creative + LP held similar across all four stores.
+    Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+
 ## 2026-04-19
 
-- **00:30 UTC** — auto-sync: 2026-04-19 00:30 UTC (`99055f4`) — 1 file
+- **00:30 UTC** — auto-sync: 2026-04-19 00:30 UTC (`d370ed0`) — 2 files
         M	SHOPIFY_STORES_INFRA.md
 
 ## 2026-04-17
