@@ -2,7 +2,7 @@
 
 client_id = "75d0ca694c091038f5977bff53a8c326"
 name = "glitch-grow"
-application_url = "https://shopify.glitchexecutor.com"
+application_url = "https://shopify.meshpilot.app"
 embedded = true
 
 [build]
@@ -12,9 +12,9 @@ automatically_update_urls_on_dev = true
 api_version = "2026-07"
 
   [webhooks.privacy_compliance]
-  customer_data_request_url = "https://shopify.glitchexecutor.com/webhooks/customers/data_request"
-  customer_deletion_url = "https://shopify.glitchexecutor.com/webhooks/customers/redact"
-  shop_deletion_url = "https://shopify.glitchexecutor.com/webhooks/shop/redact"
+  customer_data_request_url = "https://shopify.meshpilot.app/webhooks/customers/data_request"
+  customer_deletion_url = "https://shopify.meshpilot.app/webhooks/customers/redact"
+  shop_deletion_url = "https://shopify.meshpilot.app/webhooks/shop/redact"
 
   [[webhooks.subscriptions]]
   topics = [ "app/uninstalled" ]
@@ -30,10 +30,10 @@ scopes = "write_products,write_content,write_files,write_themes,write_translatio
 
 [auth]
 redirect_urls = [
-  "https://shopify.glitchexecutor.com/auth/callback",
-  "https://shopify.glitchexecutor.com/auth/shopify/callback",
-  "https://shopify.glitchexecutor.com/api/auth/callback",
-  "https://shopify.glitchexecutor.com/api/auth"
+  "https://shopify.meshpilot.app/auth/callback",
+  "https://shopify.meshpilot.app/auth/shopify/callback",
+  "https://shopify.meshpilot.app/api/auth/callback",
+  "https://shopify.meshpilot.app/api/auth"
 ]
 
 [product.metafields.app.demo_info]
