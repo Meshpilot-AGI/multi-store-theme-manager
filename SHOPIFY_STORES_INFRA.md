@@ -61,23 +61,23 @@ Notes:
 
 | Store | Action | URL |
 |---|---|---|
-| Urban Classics | re-install (add 5 read scopes) | `https://shopify.glitchexecutor.com/auth/urban/install?shop=f51039.myshopify.com` |
-| Storico | re-install (add 5 read scopes — baseline already installed) | `https://shopify.glitchexecutor.com/auth/storico/install?shop=ys4n0u-ys.myshopify.com` |
-| Classicoo | re-install (add 6 scopes incl. write_orders) | `https://shopify.glitchexecutor.com/auth/classicoo/install?shop=52j1ga-hz.myshopify.com` |
-| Trendsetters | fresh install | `https://shopify.glitchexecutor.com/auth/trendsetters/install?shop=acmsuy-g0.myshopify.com` |
+| Urban Classics | re-install (add 5 read scopes) | `https://shopify.meshpilot.app/auth/urban/install?shop=f51039.myshopify.com` |
+| Storico | re-install (add 5 read scopes — baseline already installed) | `https://shopify.meshpilot.app/auth/storico/install?shop=ys4n0u-ys.myshopify.com` |
+| Classicoo | re-install (add 6 scopes incl. write_orders) | `https://shopify.meshpilot.app/auth/classicoo/install?shop=52j1ga-hz.myshopify.com` |
+| Trendsetters | fresh install | `https://shopify.meshpilot.app/auth/trendsetters/install?shop=acmsuy-g0.myshopify.com` |
 
 **Ayurpet family:**
 
 | Store | Action | URL |
 |---|---|---|
-| Ayurpet (India) | re-install (add 5 read scopes) | `https://shopify.glitchexecutor.com/auth/ayurpet-ind/install?shop=1ygbmd-pr.myshopify.com` |
-| Ayurpet (Global) | re-install (add 5 read scopes) | `https://shopify.glitchexecutor.com/auth/ayurpet/install?shop=2684sq-mt.myshopify.com` |
+| Ayurpet (India) | re-install (add 5 read scopes) | `https://shopify.meshpilot.app/auth/ayurpet-ind/install?shop=1ygbmd-pr.myshopify.com` |
+| Ayurpet (Global) | re-install (add 5 read scopes) | `https://shopify.meshpilot.app/auth/ayurpet/install?shop=2684sq-mt.myshopify.com` |
 
 **Mokshya (standalone):**
 
 | Store | Action | URL |
 |---|---|---|
-| Mokshya | re-install (existing token 401s, plus 6 scopes missing) | `https://shopify.glitchexecutor.com/auth/mokshya/install?shop=5u7mdi-ap.myshopify.com` |
+| Mokshya | re-install (existing token 401s, plus 6 scopes missing) | `https://shopify.meshpilot.app/auth/mokshya/install?shop=5u7mdi-ap.myshopify.com` |
 
 ### What the merchant needs to do — one-time scope enablement
 
@@ -96,7 +96,7 @@ read_orders,write_orders,read_draft_orders,write_draft_orders,read_products,writ
 **Write scopes (14):** `write_orders`, `write_draft_orders`, `write_products`, `write_inventory`, `write_customers`, `write_content`, `write_files`, `write_themes`, `write_translations`, `write_online_store_navigation`, `write_price_rules`, `write_discounts`, `write_marketing_events`, `write_pixels`
 
 4. **Save** the Admin API scopes.
-5. **API credentials** tab → confirm **Allowed redirection URL(s)** includes our callback for this app (e.g. `https://shopify.glitchexecutor.com/auth/<app>/callback` — see per-store detail below). Add if missing, **Save**.
+5. **API credentials** tab → confirm **Allowed redirection URL(s)** includes our callback for this app (e.g. `https://shopify.meshpilot.app/auth/<app>/callback` — see per-store detail below). Add if missing, **Save**.
 6. Click the install/re-install URL we send → Shopify shows a consent screen listing new scopes → click **Install/Update**. Token auto-upgrades in our DB.
 
 **Once-and-done:** after this, no further merchant admin action needed for any future agent feature.
@@ -200,9 +200,9 @@ Useful when reconciling ROAS across multiple storefronts that feed from one ad-s
 
 ---
 
-## Connection paths (auth hub at `shopify.glitchexecutor.com`, port 3101)
+## Connection paths (auth hub at `shopify.meshpilot.app`, port 3101)
 
-All install URLs live in **`/home/support/multi-store-theme-manager/app/routes/auth.<app>.$.jsx`**. The served host is **`https://shopify.glitchexecutor.com`** (nginx → port 3101 → this repo). Each Shopify Custom App's Allowed Redirect URIs must include the callback listed below.
+All install URLs live in **`/home/support/multi-store-theme-manager/app/routes/auth.<app>.$.jsx`**. The served host is **`https://shopify.meshpilot.app`** (nginx → port 3101 → this repo). Each Shopify Custom App's Allowed Redirect URIs must include the callback listed below.
 
 | Dev Dashboard app name | Auth-hub slug | myshopify domain | Install URL | OAuth callback | Env-var prefix |
 |---|---|---|---|---|---|
@@ -217,10 +217,10 @@ All install URLs live in **`/home/support/multi-store-theme-manager/app/routes/a
 
 **Architecture note:** every store has its **own** app in Shopify Dev Dashboard (`https://dev.shopify.com/dashboard/<Glitch Executor org>/apps`), each with a distinct Client ID + Client Secret. There is **no** shared-app-across-stores model. Any service that verifies Shopify webhooks (cod-confirm, auth-hub, ads-agent) must therefore use a **per-shop secret map**, never a single `SHOPIFY_WEBHOOK_SECRET`. The glitch-grow-ads-agent pattern is `SHOPIFY_WEBHOOK_SECRETS` as a JSON map `{ app_slug: secret }` — new services should match that.
 
-All callback domains: **`https://shopify.glitchexecutor.com`** (must match exactly in Shopify's Allowed Redirection URLs).
+All callback domains: **`https://shopify.meshpilot.app`** (must match exactly in Shopify's Allowed Redirection URLs).
 
 **Adding a new Custom App / new client:**
-1. Merchant creates a Shopify Custom App in their store admin, sets Allowed Redirection URL to `https://shopify.glitchexecutor.com/auth/<newname>/callback`.
+1. Merchant creates a Shopify Custom App in their store admin, sets Allowed Redirection URL to `https://shopify.meshpilot.app/auth/<newname>/callback`.
 2. Merchant copies the API Key (Client ID — 32-char hex) and API Secret Key (Client Secret — `shpss_...`) out of the Custom App UI.
 3. Add 3 env vars to `/home/support/multi-store-theme-manager/.env`:
    ```
@@ -243,7 +243,7 @@ All callback domains: **`https://shopify.glitchexecutor.com`** (must match exact
 
 - **Store handle:** `urban-classics-hd` (admin.shopify.com/store/urban-classics-hd)
 - **Custom App:** `urban`
-- **Install:** `https://shopify.glitchexecutor.com/auth/urban/install?shop=f51039.myshopify.com`
+- **Install:** `https://shopify.meshpilot.app/auth/urban/install?shop=f51039.myshopify.com`
 - **Installed:** 2026-03 (baseline), re-installed 2026-04-16 with full 33-scope set.
 - **Scopes granted:** full unified 33-scope set.
 - **Checkout provider:** **Flexype** (third-party checkout overlaying native Shopify). Underperforms Fastrr peers — see Urban-family checkout providers section.
@@ -261,8 +261,8 @@ All callback domains: **`https://shopify.glitchexecutor.com`** (must match exact
 - **Store handle:** TBD
 - **Custom App:** `storico`
 - **Custom App credentials:** issued 2026-04-16, filed in `.env` as `STORICO_CLIENT_ID` + `STORICO_CLIENT_SECRET`.
-- **OAuth callback:** `https://shopify.glitchexecutor.com/auth/storico/callback`
-- **Install URL:** `https://shopify.glitchexecutor.com/auth/storico/install?shop=ys4n0u-ys.myshopify.com`
+- **OAuth callback:** `https://shopify.meshpilot.app/auth/storico/callback`
+- **Install URL:** `https://shopify.meshpilot.app/auth/storico/install?shop=ys4n0u-ys.myshopify.com`
 - **Auth-hub route:** ✅ `app/routes/auth.storico.$.jsx` created 2026-04-16, verified live.
 - **Installed:** pre-2026-04-16 with baseline; re-installed 2026-04-16 with full 33-scope set.
 - **Scopes granted:** full unified 33-scope set.
@@ -282,7 +282,7 @@ All callback domains: **`https://shopify.glitchexecutor.com`** (must match exact
 
 - **Store handle:** TBD
 - **Custom App:** `classicoo`
-- **Install URL:** `https://shopify.glitchexecutor.com/auth/classicoo/install?shop=52j1ga-hz.myshopify.com`
+- **Install URL:** `https://shopify.meshpilot.app/auth/classicoo/install?shop=52j1ga-hz.myshopify.com`
 - **Installed:** pre-2026-04-16 with baseline; re-installed 2026-04-16 with full 33-scope set.
 - **Scopes granted:** full unified 33-scope set.
 - **Checkout provider:** **Shiprocket Fastrr**. Strong ATC→Purchase (~49% on 2026-04-26).
@@ -294,8 +294,8 @@ All callback domains: **`https://shopify.glitchexecutor.com`** (must match exact
 - **Store handle:** TBD
 - **Custom App:** `trendsetters`
 - **Custom App credentials:** issued 2026-04-16, filed in `.env` as `TRENDSETTERS_CLIENT_ID` + `TRENDSETTERS_CLIENT_SECRET`.
-- **OAuth callback:** `https://shopify.glitchexecutor.com/auth/trendsetters/callback`
-- **Install URL:** `https://shopify.glitchexecutor.com/auth/trendsetters/install?shop=acmsuy-g0.myshopify.com`
+- **OAuth callback:** `https://shopify.meshpilot.app/auth/trendsetters/callback`
+- **Install URL:** `https://shopify.meshpilot.app/auth/trendsetters/install?shop=acmsuy-g0.myshopify.com`
 - **Auth-hub route:** ✅ `app/routes/auth.trendsetters.$.jsx` created 2026-04-16, verified live.
 - **Installed:** 2026-04-16 (fresh install with full 33-scope set).
 - **Scopes granted:** full unified 33-scope set.
@@ -314,7 +314,7 @@ Both storefronts share a single Meta Ads account (`act_654879327196107`). ROAS m
 - **Store handle:** `ayurpet` (admin.shopify.com/store/ayurpet)
 - **Role:** India-market sales storefront. Traffic from India-targeted Meta ads lands here.
 - **Custom App:** `ayurpet-ind`
-- **Install URL:** `https://shopify.glitchexecutor.com/auth/ayurpet-ind/install?shop=1ygbmd-pr.myshopify.com`
+- **Install URL:** `https://shopify.meshpilot.app/auth/ayurpet-ind/install?shop=1ygbmd-pr.myshopify.com`
 - **Installed:** 2026-04-15; re-installed 2026-04-16 with full 33-scope set.
 - **Scopes granted:** full unified 33-scope set.
 - **cod-confirm status:** not enrolled (user decision — NOT running voice-AI confirmation on Ayurpet for now).
@@ -327,7 +327,7 @@ Both storefronts share a single Meta Ads account (`act_654879327196107`). ROAS m
 - **Store handle:** `2684sq-mt` (admin.shopify.com/store/2684sq-mt)
 - **Role:** Global-market sales storefront (ex-India). Traffic from geo-targeted Meta ads for Global audiences lands here.
 - **Custom App:** `ayurpet`
-- **Install URL:** `https://shopify.glitchexecutor.com/auth/ayurpet/install?shop=2684sq-mt.myshopify.com`
+- **Install URL:** `https://shopify.meshpilot.app/auth/ayurpet/install?shop=2684sq-mt.myshopify.com`
 - **Installed:** 2026-04-15; re-installed 2026-04-16 with full 33-scope set.
 - **Scopes granted:** full unified 33-scope set.
 - **cod-confirm status:** not enrolled (global markets typically not COD-heavy; revisit if Global storefront starts offering COD in markets like UAE, Bangladesh, etc.).
@@ -342,8 +342,8 @@ Both storefronts share a single Meta Ads account (`act_654879327196107`). ROAS m
 
 - **Store handle:** TBD
 - **Custom App:** `mokshya` — **shares credentials** with the auth-hub default app (`SHOPIFY_API_KEY` / `SHOPIFY_API_SECRET`). For symmetry with the other slugs, `MOKSHYA_CLIENT_ID` and `MOKSHYA_CLIENT_SECRET` env vars alias those values in the auth-hub `.env`.
-- **OAuth callback:** `https://shopify.glitchexecutor.com/auth/mokshya/callback`
-- **Install URL:** `https://shopify.glitchexecutor.com/auth/mokshya/install?shop=5u7mdi-ap.myshopify.com`
+- **OAuth callback:** `https://shopify.meshpilot.app/auth/mokshya/callback`
+- **Install URL:** `https://shopify.meshpilot.app/auth/mokshya/install?shop=5u7mdi-ap.myshopify.com`
 - **Auth-hub route:** ✅ `app/routes/auth.mokshya.$.jsx` created 2026-04-16, verified live.
 - **Installed:** re-installed 2026-04-16 with full 33-scope set (previous token was revoked).
 - **Scopes granted:** full unified 33-scope set.
@@ -384,7 +384,7 @@ All six services share the same Postgres at `127.0.0.1:5432/shopify_app` (table 
 - **2026-04-16** — Glitch Grow Ads Agent (`/home/support/glitch-grow-ads-agent`) deployed at `insights.glitchexecutor.com`. 15 Shopify webhooks registered across Urban + both Ayurpets; 338 orders backfilled to PostHog (Urban 82 / Ayurpet India 137 / Ayurpet Global 119). `cod-confirm` webhook on Urban preserved (script never touches other services' hooks).
 - **2026-04-16 (restructure)** — introduced **client family** grouping: Urban family (Urban Classics, Storico, Classicoo, Trendsetters), Ayurpet family (India + Global), Mokshya standalone. Added **Storico** (`ys4n0u-ys.myshopify.com`, Custom App `storico`, creds issued 2026-04-16). Added **Trendsetters** and **Mokshya** as onboarding placeholders. Removed `5u7mdi-ap.myshopify.com` (dead session, not a real storefront). Total active client storefronts: 7 — 4 installed, 1 credentials-issued, 2 not yet onboarded.
 - **2026-04-16 (scope unification)** — all `*_SCOPES` env vars in auth hub bumped to unified 15-scope analytics-ready baseline (read_orders, write_orders, read_customers, read_products, write_products, read_product_listings, read_analytics, read_reports, write_content, write_files, write_themes, write_translations, write_inventory, read_locales, write_online_store_navigation). Added **Trendsetters** creds (`acmsuy-g0.myshopify.com`, Custom App `trendsetters`). Created `auth.storico.$.jsx` and `auth.trendsetters.$.jsx` routes. Rebuilt + restarted `shopify-app.service`, both new routes verified live. All 4 already-installed stores (Urban Classics, Classicoo, Ayurpet India, Ayurpet Global) need merchant re-install after they enable the new scopes in their Custom App admin UI — install URLs listed at the top of this doc. Also updated ads-agent `.env` `SHOPIFY_WEBHOOK_SECRETS` to include storico + trendsetters HMAC secrets, and ads-agent `src/ads_agent/config.py` to register all 6 stores.
-- **2026-04-16 (Mokshya correction)** — corrected `5u7mdi-ap.myshopify.com` identity: it is **Mokshya**, not a dead Classicoo secondary. Uses the auth-hub default app credentials (`SHOPIFY_API_KEY/SECRET`). Created `auth.mokshya.$.jsx` route + `MOKSHYA_*` env var aliases. Rebuilt + restarted auth hub, install URL verified. Store count reaches **7 client storefronts confirmed**. Existing token 401s (likely revoked when Custom App was last edited) — merchant re-install required via `https://shopify.glitchexecutor.com/auth/mokshya/install?shop=5u7mdi-ap.myshopify.com`.
+- **2026-04-16 (Mokshya correction)** — corrected `5u7mdi-ap.myshopify.com` identity: it is **Mokshya**, not a dead Classicoo secondary. Uses the auth-hub default app credentials (`SHOPIFY_API_KEY/SECRET`). Created `auth.mokshya.$.jsx` route + `MOKSHYA_*` env var aliases. Rebuilt + restarted auth hub, install URL verified. Store count reaches **7 client storefronts confirmed**. Existing token 401s (likely revoked when Custom App was last edited) — merchant re-install required via `https://shopify.meshpilot.app/auth/mokshya/install?shop=5u7mdi-ap.myshopify.com`.
 - **2026-04-16 (maximal scope set — final)** — replaced the 15-scope unified baseline with a **33-scope maximal set** covering all foreseeable ads-ops / analytics / content-tooling / HITL-write use cases. Iteratively trimmed from 44 → 41 → 33 as Shopify Custom App UI rejected newer scope names. Key additions vs. previous 15-scope baseline: `read_returns`, `read_fulfillments`, `read_customer_events`, `read_draft_orders` / `write_draft_orders`, `read_marketing_events` / `write_marketing_events`, `read_discounts` / `write_discounts`, `read_price_rules` / `write_price_rules`, `read_locations`, `read_shipping`, `write_customers`, `write_pixels`. Updated all 8 `*_SCOPES` vars. All 7 merchants enabled scopes in their Custom App admin UIs and re-installed. All 7 storefronts now running full 33-scope set. This is the LAST scope change — future agent features use the already-granted set.
 - **2026-04-16 (post-enablement verification)** — ran live `read_customers` + `customerJourneySummary` queries across all 7 storefronts: all returned customer emails and UTM attribution (where populated). 35 Shopify webhooks total (5 topics × 7 stores) firing to `insights.glitchexecutor.com`. Backfilled 1,371 order events into PostHog (all lifecycle states, not just paid) with order-native `createdAt` as event timestamp, customer IDs for person-stitching, UTM params flattened as `utm_source/medium/campaign/content/term`, and line-item JSON.
 - **2026-04-16 (doc rename + Meta account refresh)** — renamed `STORES.md` → `SHOPIFY_STORES_INFRA.md` (canonical doc across all Shopify-adjacent workflows — cod-confirm, ads agent, meta-ads-mcp, future services). Live Meta ad-account snapshot pulled via `meta-ads-mcp get_ad_accounts`, Summary + Reverse-view tables updated: Trendsetters → `act_1445770643706149`; Storico → `act_1072546905038329` primary (+ 5 secondary accounts); Mokshya → `act_507013211846013` CAD + `act_30237311672580998` INR (dual-currency like Ayurpet). All account spend figures refreshed.
