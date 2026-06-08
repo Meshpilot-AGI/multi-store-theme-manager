@@ -11,9 +11,20 @@ Body text (if present) shown as indented sub-bullets.
 
 ---
 
+## 2026-06-08
+
+- **08:13 UTC** — docs(stores-infra): install/callback URLs → shopify.meshpilot.app (glitchexecutor dead) (`c191b56`) — 1 file
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+- **08:12 UTC** — config: repoint app URLs from dead shopify.glitchexecutor.com → shopify.meshpilot.app (`2965f98`) — 1 file
+    glitchexecutor.com is NXDOMAIN; the auth-hub now serves shopify.meshpilot.app
+    (nginx → :3101). Updated application_url, redirect_urls and GDPR privacy webhook
+    URLs. Runtime .env SHOPIFY_APP_URL updated + service restarted (un-hung a
+    week-old stuck process); OAuth install now emits shopify.meshpilot.app callbacks.
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
 ## 2026-05-16
 
-- **02:48 UTC** — auto-sync: 2026-05-06 04:00 UTC (`ba616d9`) — 2 files
+- **03:04 UTC** — auto-sync: 2026-05-06 04:00 UTC (`3bd6b97`) — 2 files
         M	.gitignore
         M	CHANGELOG.md
 
