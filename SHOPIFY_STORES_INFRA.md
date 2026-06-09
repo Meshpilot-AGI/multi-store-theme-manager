@@ -4,6 +4,38 @@
 
 **Canonical home:** `multi-store-theme-manager/SHOPIFY_STORES_INFRA.md` (auto-synced to GitHub every 15 min via `/home/support/bin/git-sync-all`).
 
+---
+
+## ⚠️ Token topology — READ THIS BEFORE CALLING ANY STORE (canonical, 2026-06-08)
+
+**The #1 mistake: do NOT use the Mesh Pilot _public_ app (`44bf…`, draft) to call individual stores.** Every operated store has its **own per-store Custom App**. Machine-readable registry: `SHOPIFY_STORE_APPS_JSON` in `glitch-grow-ads-agent-private/.env` — `domain → { slug, client_id, client_secret, automation_token }`.
+
+**What each token prefix is (they are NOT interchangeable):**
+
+| Prefix | Meaning | Use for | NEVER for |
+|---|---|---|---|
+| `shpca_` | Store **Admin API access token** (from OAuth install), in DB `Session` table keyed by `shop` | **All Admin API calls to a store** (`X-Shopify-Access-Token`) — resolve per-shop | — |
+| `client_id` (32 hex) | App API key | OAuth install / identifying the app | auth header |
+| `shpss_` | App **client secret** = its **webhook HMAC secret** | verifying that store's webhooks; OAuth exchange | a bearer/access token |
+| `atkn_` | **App Automation Token** (per-app, **6-month** forced expiry) | **Shopify CLI / `shopify app deploy` / app management of that app ONLY** | ❌ NOT an Admin API token — 401 "Service is not valid for authentication" |
+
+**To reach a store's data:** read its `shpca_` token from DB `Session` (`shop=<domain>, isOnline=false`), send as `X-Shopify-Access-Token`. That token is produced by completing OAuth install at `https://shopify.meshpilot.app/auth/<slug>/install` (auth-hub = this repo, `shopify-app.service` :3101).
+
+**GraphQL only — REST Admin API is deprecated** (https://shopify.dev/docs/apps/build/graphql/migrate). New store calls MUST use the **GraphQL Admin API** (`POST /admin/api/<version>/graphql.json`), version-pinned. cod-confirm already complies; do not add new REST (`/admin/api/*/<resource>.json`) sites — migrate any you touch.
+
+**The 8 apps** (client_ids are not secret; secrets live only in `.env`):
+
+| Brand | slug | domain | client_id |
+|---|---|---|---|
+| Urban Classics | `urban` | `f51039.myshopify.com` | `1eed5b832323038de00f833dfb53901e` |
+| Storico | `storico` | `ys4n0u-ys.myshopify.com` | `f05eda6a8b597bb0eb753f14fdf3acd3` |
+| Classicoo | `classicoo` | `52j1ga-hz.myshopify.com` | `9dc0acff01a55a88a97893ab2eb440be` |
+| Ayurpet (India) | `ayurpet-ind` | `1ygbmd-pr.myshopify.com` | `d9d977e5463aa1afc2991d34bd4f1cdf` |
+| Trendsetters | `trendsetters` | `acmsuy-g0.myshopify.com` | `79814ebfe22686feec2091cc8b8c1ecf` |
+| Ayurpet (Global) | `ayurpet` | `2684sq-mt.myshopify.com` | `8368e51895a4331665384e0c83d7f31f` |
+| Mokshya (= auth-hub default app) | `mokshya` | `5u7mdi-ap.myshopify.com` | `75d0ca694c091038f5977bff53a8c326` |
+| **Mesh Pilot public (draft) — onboarding only** | `_public` | *(none)* | `44bf7f3709e4d301f70953b496f086f5` |
+
 ## What this file maps
 
 1:1:1:N relationship between, for each client storefront:
